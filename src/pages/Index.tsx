@@ -10,9 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { WinsProvider } from '@/contexts/WinsContext';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { AddWinDialog } from '@/components/wins/AddWinDialog';
+import { ProfileDialogContent } from '@/components/profile/ProfileDialog';
 import { WinsTimeline } from '@/components/wins/WinsTimeline';
 import { ManagerReadyView } from '@/components/manager/ManagerReadyView';
 import { WeeklyReflection } from '@/components/reflection/WeeklyReflection';
@@ -23,6 +25,7 @@ type View = 'dashboard' | 'timeline' | 'manager' | 'reflection';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [showProfile, setShowProfile] = useState(false);
   const { logout, currentUser } = useAuth();
 
   const handleLogout = async () => {
@@ -84,7 +87,7 @@ function AppContent() {
                   <div className="text-xs text-gray-500 font-normal">{currentUser?.email}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-100 my-1" />
-                <DropdownMenuItem className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
+                <DropdownMenuItem onClick={() => setShowProfile(true)} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
                   <User className="mr-2 h-4 w-4 text-gray-500" />
                   <span>Profile</span>
                 </DropdownMenuItem>
@@ -95,6 +98,12 @@ function AppContent() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Dialog open={showProfile} onOpenChange={setShowProfile}>
+              <DialogContent className="sm:max-w-[425px] rounded-3xl p-6 bg-white border-none shadow-2xl">
+                <ProfileDialogContent />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>
