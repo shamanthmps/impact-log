@@ -12,40 +12,44 @@ export function StatsCards() {
       icon: Trophy,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
+      delay: '0ms'
     },
     {
       label: 'Wins This Month',
       value: getWinsThisMonth(),
       icon: Calendar,
-      color: 'text-category-stakeholder',
-      bgColor: 'bg-category-stakeholder/10',
+      color: 'text-accent',
+      bgColor: 'bg-accent/10',
+      delay: '100ms'
     },
     {
       label: 'Categories Covered',
       value: getCategoriesCovered(),
       icon: Layers,
-      color: 'text-category-leadership',
-      bgColor: 'bg-category-leadership/10',
+      color: 'text-category-ai',
+      bgColor: 'bg-category-ai/10',
+      delay: '200ms'
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {stats.map((stat, index) => (
-        <GlassCard 
-          key={stat.label} 
-          className="animate-slide-up"
+        <GlassCard
+          key={stat.label}
+          className="animate-slide-up hover:border-primary/50 transition-colors duration-300"
+          style={{ animationDelay: stat.delay }}
           hover
         >
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-              <stat.icon className={`w-6 h-6 ${stat.color}`} />
+          <div className="flex items-center gap-5">
+            <div className={`p-4 rounded-2xl ${stat.bgColor} ring-1 ring-inset ring-white/5`}>
+              <stat.icon className={`w-7 h-7 ${stat.color}`} />
             </div>
             <div>
-              <p className="text-3xl font-semibold text-foreground">
+              <p className="text-4xl font-bold text-foreground tracking-tight">
                 {stat.value}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mt-1">
                 {stat.label}
               </p>
             </div>

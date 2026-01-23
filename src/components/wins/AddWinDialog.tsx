@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Plus, X, CalendarIcon } from 'lucide-react';
+import { Plus, X, CalendarIcon, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -42,7 +42,7 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!situation.trim() || !action.trim() || !impact.trim()) {
       toast.error('Please fill in all required fields');
       return;
@@ -67,18 +67,22 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="primary" size="lg" className="gap-2">
+          <Button variant="primary" size="lg" className="gap-2 btn-primary-glow">
             <Plus className="w-5 h-5" />
             Add Win
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[520px] glass-card border-0 p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-4">
-          <DialogTitle className="text-xl font-semibold">Log a Win</DialogTitle>
+      <DialogContent className="sm:max-w-[550px] glass-card border-white/10 p-0 overflow-hidden shadow-2xl">
+        <DialogHeader className="p-6 pb-4 border-b border-white/5 bg-white/5">
+          <div className="flex items-center gap-2 text-primary mb-1">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-xs font-medium uppercase tracking-wider">New Entry</span>
+          </div>
+          <DialogTitle className="text-2xl font-bold">Log a Win</DialogTitle>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             {/* Date Picker */}
             <div className="space-y-2">
@@ -88,21 +92,21 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal bg-black/20 border-white/10 hover:bg-black/40",
                       !date && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
                     {date ? format(date, "MMM d, yyyy") : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 border-white/10" align="start">
                   <Calendar
                     mode="single"
                     selected={date}
                     onSelect={(d) => d && setDate(d)}
                     initialFocus
-                    className="pointer-events-auto"
+                    className="glass-card"
                   />
                 </PopoverContent>
               </Popover>
@@ -112,10 +116,10 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
             <div className="space-y-2">
               <Label htmlFor="category">Win Type</Label>
               <Select value={category} onValueChange={(v) => setCategory(v as WinCategory)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-black/20 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="glass-card border-white/10">
                   {Object.entries(WIN_CATEGORIES).map(([key, { label }]) => (
                     <SelectItem key={key} value={key}>
                       {label}
@@ -128,37 +132,37 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
 
           {/* Situation */}
           <div className="space-y-2">
-            <Label htmlFor="situation">Situation <span className="text-muted-foreground">(context in one line)</span></Label>
+            <Label htmlFor="situation">Situation <span className="text-muted-foreground text-xs font-normal ml-1">(context in one line)</span></Label>
             <Input
               id="situation"
               value={situation}
               onChange={(e) => setSituation(e.target.value)}
               placeholder="e.g., Sprint delivery was at risk due to unresolved dependencies"
-              className="bg-white/50"
+              className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20"
             />
           </div>
 
           {/* Action */}
           <div className="space-y-2">
-            <Label htmlFor="action">Action Taken <span className="text-muted-foreground">(what you did)</span></Label>
+            <Label htmlFor="action">Action Taken <span className="text-muted-foreground text-xs font-normal ml-1">(what you did)</span></Label>
             <Textarea
               id="action"
               value={action}
               onChange={(e) => setAction(e.target.value)}
               placeholder="e.g., Facilitated a cross-team sync to unblock critical dependencies"
-              className="bg-white/50 min-h-[80px] resize-none"
+              className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20 min-h-[80px] resize-none"
             />
           </div>
 
           {/* Impact */}
           <div className="space-y-2">
-            <Label htmlFor="impact">Impact <span className="text-muted-foreground">(outcome in business terms)</span></Label>
+            <Label htmlFor="impact">Impact <span className="text-muted-foreground text-xs font-normal ml-1">(outcome in business terms)</span></Label>
             <Textarea
               id="impact"
               value={impact}
               onChange={(e) => setImpact(e.target.value)}
               placeholder="e.g., Delivered sprint on time, avoiding $50K delay cost"
-              className="bg-white/50 min-h-[80px] resize-none"
+              className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20 min-h-[80px] resize-none"
             />
           </div>
 
@@ -167,10 +171,10 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
             <div className="space-y-2">
               <Label htmlFor="impactType">Impact Type</Label>
               <Select value={impactType} onValueChange={(v) => setImpactType(v as ImpactType)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-black/20 border-white/10">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="glass-card border-white/10">
                   {Object.entries(IMPACT_TYPES).map(([key, { label }]) => (
                     <SelectItem key={key} value={key}>
                       {label}
@@ -182,27 +186,27 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
 
             {/* Evidence */}
             <div className="space-y-2">
-              <Label htmlFor="evidence">Evidence <span className="text-muted-foreground">(optional)</span></Label>
+              <Label htmlFor="evidence">Evidence <span className="text-muted-foreground text-xs font-normal ml-1">(optional)</span></Label>
               <Input
                 id="evidence"
                 value={evidence}
                 onChange={(e) => setEvidence(e.target.value)}
                 placeholder="Link or notes"
-                className="bg-white/50"
+                className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20"
               />
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <Button
               type="button"
               variant="ghost"
               onClick={() => setOpen(false)}
-              className="flex-1"
+              className="flex-1 hover:bg-white/5"
             >
               Cancel
             </Button>
-            <Button type="submit" variant="primary" className="flex-1">
+            <Button type="submit" variant="primary" className="flex-1 btn-primary-glow">
               Save Win
             </Button>
           </div>

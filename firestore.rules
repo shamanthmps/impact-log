@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Example: Users collection - users can only read/write their own data
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+    
+    // Example: Public collection - anyone can read, only authenticated users can write
+    match /public/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Example: Private user data - only the owner can access
+    match /userPrivate/{userId}/{document=**} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Add your custom collections and rules here
+    // For development, you might want to start with more permissive rules
+    // and tighten them as you develop your security model
+    
+    // Default: deny all access to any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
