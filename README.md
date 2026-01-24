@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 
-*Transform how you document and communicate your career value using the proven STAR methodology.*
+*Transform how you document and communicate your career value using the proven CAR methodology.*
 
 [Architecture](#-architecture) • [Features](#-features) • [Deployment](#-deployment) • [Getting Started](#-getting-started)
 
