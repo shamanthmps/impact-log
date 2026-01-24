@@ -145,6 +145,7 @@ export function useWins() {
       try {
         const newWin = {
           ...winData,
+          evidence: winData.evidence || null, // Ensure undefined becomes null
           userId: currentUser.uid,
           date: Timestamp.fromDate(winData.date),
           createdAt: Timestamp.now(),
@@ -186,6 +187,14 @@ export function useWins() {
       try {
         const firestoreUpdates: any = { ...updates, updatedAt: Timestamp.now() };
         if (updates.date) firestoreUpdates.date = Timestamp.fromDate(updates.date);
+
+        // Sanitize optional fields
+        if (firestoreUpdates.evidence === undefined) {
+          delete firestoreUpdates.evidence;
+        } else if (firestoreUpdates.evidence === null) {
+          // keep explicit null or handle it as needed
+        }
+
         await updateDoc(doc(db, 'wins', id), firestoreUpdates);
         logger.info('Win updated Firestore', 'useWins', { id });
       } catch (err) {
