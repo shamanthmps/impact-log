@@ -68,10 +68,10 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
       <DialogTrigger asChild>
         {trigger || (
           <Button
-            className="btn-primary-glow bg-blue-600 hover:bg-blue-700 text-white gap-2 h-12 w-12 rounded-full sm:h-12 sm:w-auto sm:rounded-xl sm:px-6 p-0 sm:p-4 flex items-center justify-center"
+            className="btn-primary-glow bg-blue-600 hover:bg-blue-700 text-white gap-2 h-10 w-10 rounded-full sm:h-10 sm:w-auto sm:rounded-lg sm:px-4 p-0 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
           >
-            <Plus className="w-6 h-6 sm:w-5 sm:h-5" />
-            <span className="hidden sm:inline">Add Win</span>
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline text-sm font-semibold">Add Win</span>
           </Button>
         )}
       </DialogTrigger>
