@@ -1,21 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle } from 'lucide-react';
+import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle, Loader2 } from 'lucide-react';
 import { useWins } from '@/hooks/useWins';
 import { toast } from 'sonner';
+import { useProfile, UserProfile } from '@/hooks/useProfile';
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState('profile');
     const { wins, reflections } = useWins();
+    const { profile, updateProfile, isLoading: isProfileLoading } = useProfile();
+
+    // Local form state
+    const [formData, setFormData] = useState<Partial<UserProfile>>({});
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (profile) {
+            setFormData(profile);
+        }
+    }, [profile]);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await updateProfile(formData);
+            // toast success handled in hook
+        } catch (error) {
+            // error handled in hook
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const handleExportData = () => {
         try {
             const dataToExport = {
                 wins,
                 reflections,
+                profile,
                 exportDate: new Date().toISOString(),
                 version: '1.0'
             };
@@ -89,24 +114,30 @@ export default function Settings() {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Full Name</Label>
                                     <Input
-                                        defaultValue="Alexander Sterling"
+                                        value={formData.displayName || ''}
+                                        onChange={e => setFormData({ ...formData, displayName: e.target.value })}
                                         className="bg-transparent border-0 border-b border-gray-200 rounded-none px-0 text-xl font-bold h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-all placeholder:text-gray-300"
+                                        placeholder="Enter your full name"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Professional Title</Label>
                                     <Input
-                                        defaultValue="Chief Impact Officer"
+                                        value={formData.role || ''}
+                                        onChange={e => setFormData({ ...formData, role: e.target.value })}
                                         className="bg-transparent border-0 border-b border-gray-200 rounded-none px-0 text-xl font-bold h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-all placeholder:text-gray-300"
+                                        placeholder="e.g. Senior Product Manager"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Impact Statement</Label>
+                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Impact Statement (Bio)</Label>
                                     <Input
-                                        defaultValue="Driving sustainable growth through data-driven architectural innovation."
+                                        value={formData.bio || ''}
+                                        onChange={e => setFormData({ ...formData, bio: e.target.value })}
                                         className="bg-transparent border-0 border-b border-gray-200 rounded-none px-0 text-lg text-gray-500 h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-all placeholder:text-gray-300"
+                                        placeholder="Your professional mission statement"
                                     />
                                 </div>
                             </div>
@@ -174,11 +205,20 @@ export default function Settings() {
 
                         {/* Action Bar */}
                         <div className="pt-8">
-                            <Button className="w-full h-14 text-white hover:bg-primary/90 font-black uppercase tracking-widest text-lg rounded-xl shadow-lg shadow-primary/20">
-                                Save All Changes
+                            <Button
+                                onClick={handleSave}
+                                disabled={isSaving}
+                                className="w-full h-14 text-white hover:bg-primary/90 font-black uppercase tracking-widest text-lg rounded-xl shadow-lg shadow-primary/20"
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : 'Save All Changes'}
                             </Button>
                             <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest mt-4">
-                                Last synced: Just now
+                                Last synced: {profile?.updatedAt ? new Date(profile.updatedAt).toLocaleTimeString() : 'Never'}
                             </p>
                         </div>
 

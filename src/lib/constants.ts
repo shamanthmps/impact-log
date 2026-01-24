@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
     WINS: 'impactlog-wins',
     REFLECTIONS: 'impactlog-reflections',
     USER_PREFERENCES: 'impactlog-preferences',
+    PROFILE: 'impactlog-profile',
 } as const;
 
 // Application Configuration
