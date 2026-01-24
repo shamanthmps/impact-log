@@ -113,10 +113,14 @@ function AppContent() {
                   <User className="mr-2 h-4 w-4 text-gray-500" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
-                  <Settings className="mr-2 h-4 w-4 text-gray-500" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
+
+                {!isGuest && (
+                  <DropdownMenuItem onClick={() => navigate('/settings')} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
+                    <Settings className="mr-2 h-4 w-4 text-gray-500" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                )}
+
                 <DropdownMenuSeparator className="bg-gray-100 my-1" />
                 <DropdownMenuItem onClick={handleLogout} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-red-50 focus:bg-red-50 text-red-600 focus:text-red-700 outline-none">
                   <LogOut className="mr-2 h-4 w-4" />
