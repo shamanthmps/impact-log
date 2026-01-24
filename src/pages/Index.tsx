@@ -16,7 +16,7 @@ import { WinsProvider, useWinsContext } from '@/contexts/WinsContext';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { AddWinDialog } from '@/components/wins/AddWinDialog';
 import { ProfileDialogContent } from '@/components/profile/ProfileDialog';
-import { WinsTimeline } from '@/components/wins/WinsTimeline';
+import { WinsTimeline, type DateFilter } from '@/components/wins/WinsTimeline';
 import { ManagerReadyView } from '@/components/manager/ManagerReadyView';
 import { WeeklyReflection } from '@/components/reflection/WeeklyReflection';
 import { DataPersistenceWarning } from '@/components/ui/DataPersistenceWarning';
@@ -28,6 +28,7 @@ type View = 'dashboard' | 'timeline' | 'manager' | 'reflection';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [timelineInitFilter, setTimelineInitFilter] = useState<DateFilter>('all');
   const [showProfile, setShowProfile] = useState(false);
   const { logout, currentUser } = useAuth();
   const { isGuest } = useWinsContext();
@@ -43,9 +44,30 @@ function AppContent() {
     }
   };
 
+  const handleStatsNavigate = (filter: DateFilter) => {
+    setTimelineInitFilter(filter);
+    setCurrentView('timeline');
+  };
+
   const today = new Date();
   const greeting = format(today, DATE_CONFIG.FULL_DATE_FORMAT);
-  const motivation = MOTIVATIONAL_LINES[today.getDay() % MOTIVATIONAL_LINES.length];
+
+  // Cycle motivation sequentially on every refresh
+  const [motivation] = useState(() => {
+    const STORAGE_KEY = 'impactlog-quote-index';
+    const storedIndex = localStorage.getItem(STORAGE_KEY);
+
+    // Default to 0 if not set, otherwise increment
+    let nextIndex = 0;
+    if (storedIndex !== null) {
+      nextIndex = (parseInt(storedIndex, 10) + 1) % MOTIVATIONAL_LINES.length;
+    }
+
+    // Save new index for next time
+    localStorage.setItem(STORAGE_KEY, nextIndex.toString());
+
+    return MOTIVATIONAL_LINES[nextIndex];
+  });
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -166,7 +188,7 @@ function AppContent() {
           {currentView === 'dashboard' && (
             <div className="space-y-10 animate-fade-in">
               {/* Stats Row */}
-              <StatsCards />
+              <StatsCards onNavigate={handleStatsNavigate} />
 
               {/* Main Action Area */}
               <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl p-10 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/20 group cursor-pointer transition-all leading-tight hover:scale-[1.005]">
@@ -220,7 +242,7 @@ function AppContent() {
           {currentView === 'timeline' && (
             <div className="animate-fade-in">
               <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
-                <WinsTimeline />
+                <WinsTimeline initialDateFilter={timelineInitFilter} />
               </div>
             </div>
           )}

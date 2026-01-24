@@ -10,11 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { AddWinDialog } from '@/components/wins/AddWinDialog';
 
-type DateFilter = 'all' | 'week' | 'month' | '3months';
+export type DateFilter = 'all' | 'week' | 'month' | '3months';
 
-export function WinsTimeline() {
+interface WinsTimelineProps {
+  initialDateFilter?: DateFilter;
+}
+
+export function WinsTimeline({ initialDateFilter = 'all' }: WinsTimelineProps) {
   const { wins, deleteWin } = useWinsContext();
-  const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+  const [dateFilter, setDateFilter] = useState<DateFilter>(initialDateFilter);
   const [categoryFilter, setCategoryFilter] = useState<WinCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 

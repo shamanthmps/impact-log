@@ -28,6 +28,16 @@ export const MOTIVATIONAL_LINES = [
     "Build your narrative, one win at a time.",
     "Capture today's wins for tomorrow's success.",
     "Every impact documented is a story waiting to be told.",
+    "Clarity today creates confidence tomorrow.",
+    "What gets captured gets remembered.",
+    "Progress is powerful when it is visible.",
+    "Turn daily effort into lasting impact.",
+    "Intentional reflection fuels consistent growth.",
+    "Your impact deserves to be seen.",
+    "Discipline in logging builds leadership muscle.",
+    "From effort to evidence, one entry at a time.",
+    "Small actions, clearly captured, shape big outcomes.",
+    "Ownership begins with awareness."
 ] as const;
 
 // Date/Time Configuration

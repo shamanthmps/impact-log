@@ -1,8 +1,13 @@
 import { Trophy, Calendar, Layers } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { useWinsContext } from '@/contexts/WinsContext';
+import { DateFilter } from '@/components/wins/WinsTimeline';
 
-export function StatsCards() {
+interface StatsCardsProps {
+  onNavigate: (filter: DateFilter) => void;
+}
+
+export function StatsCards({ onNavigate }: StatsCardsProps) {
   const { getWinsThisWeek, getWinsThisMonth, getCategoriesCovered } = useWinsContext();
 
   const stats = [
@@ -12,7 +17,8 @@ export function StatsCards() {
       icon: Trophy,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
-      delay: '0ms'
+      delay: '0ms',
+      filter: 'week' as DateFilter
     },
     {
       label: 'Wins This Month',
@@ -20,7 +26,8 @@ export function StatsCards() {
       icon: Calendar,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
-      delay: '100ms'
+      delay: '100ms',
+      filter: 'month' as DateFilter
     },
     {
       label: 'Categories Covered',
@@ -28,7 +35,8 @@ export function StatsCards() {
       icon: Layers,
       color: 'text-primary',
       bgColor: 'bg-primary/10',
-      delay: '200ms'
+      delay: '200ms',
+      filter: 'all' as DateFilter
     },
   ];
 
@@ -37,9 +45,10 @@ export function StatsCards() {
       {stats.map((stat, index) => (
         <GlassCard
           key={stat.label}
-          className="animate-slide-up hover:border-primary/50 transition-colors duration-300"
+          className="animate-slide-up hover:border-primary/50 transition-colors duration-300 cursor-pointer active:scale-[98%] transition-transform"
           style={{ animationDelay: stat.delay }}
           hover
+          onClick={() => onNavigate(stat.filter)}
         >
           <div className="flex items-center gap-5">
             <div className={`p-4 rounded-2xl ${stat.bgColor} ring-1 ring-inset ring-white/5`}>
