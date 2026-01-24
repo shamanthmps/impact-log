@@ -19,7 +19,7 @@
 
 ## 🎯 What is Impact Log?
 
-Impact Log helps professionals **track, organize, and communicate their career achievements** effectively. Built for performance reviews, 1:1s, and resume updates, it structures your wins using the **STAR methodology** (Situation, Action, Result) for maximum impact.
+Impact Log helps professionals **track, organize, and communicate their career achievements** effectively. Built for performance reviews, 1:1s, and resume updates, it structures your wins using the **CAR methodology** (Challenge, Action, Result) for maximum impact.
 
 ---
 
@@ -58,7 +58,7 @@ graph TD
 ## ✨ Features
 
 ### 📊 Achievement Tracking
-- **STAR Methodology**: Structured input for Situation, Action, and Result.
+- **CAR Methodology**: Structured input for Challenge, Action, and Result.
 - **Quantifiable Impact**: Track Revenue, Efficiency, Quality, and Team Growth metrics.
 - **Categorization**: Tag wins by leadership, technical excellence, or innovation.
 

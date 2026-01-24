@@ -21,9 +21,9 @@ export function ManagerReadyView() {
 
   const formatWinForCopy = (win: Win, index: number) => {
     return `${index + 1}. ${WIN_CATEGORIES[win.category].label}
-   Problem: ${win.situation}
+   Challenge: ${win.situation}
    Action: ${win.action}
-   Impact: ${win.impact}`;
+   Result: ${win.impact}`;
   };
 
   const generateSummary = () => {
@@ -163,7 +163,7 @@ export function ManagerReadyView() {
 
                   <div>
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Problem
+                      Challenge
                     </p>
                     <p className="text-sm text-foreground">{win.situation}</p>
                   </div>
@@ -177,7 +177,7 @@ export function ManagerReadyView() {
 
                   <div>
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Impact
+                      Result
                     </p>
                     <p className="text-sm text-foreground font-medium">{win.impact}</p>
                   </div>

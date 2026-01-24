@@ -86,7 +86,7 @@ export function WinCard({ win, onEdit, onDelete }: WinCardProps) {
           <div className="grid md:grid-cols-2 gap-5">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-primary/80 uppercase tracking-widest">
-                Action Taken
+                Action
               </p>
               <p className="text-sm text-foreground/90 leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5">
                 {win.action}
@@ -95,7 +95,7 @@ export function WinCard({ win, onEdit, onDelete }: WinCardProps) {
 
             <div className="space-y-1">
               <p className="text-xs font-semibold text-primary/80 uppercase tracking-widest">
-                Impact
+                Result
               </p>
               <p className="text-sm text-foreground/90 leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5">
                 {win.impact}

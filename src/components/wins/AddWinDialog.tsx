@@ -174,46 +174,46 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
             </div>
           </div>
 
-          {/* Situation */}
+          {/* Challenge (mapped to situation field) */}
           <div className="space-y-2">
-            <Label htmlFor="situation">Situation <span className="text-muted-foreground text-xs font-normal ml-1">(context in one line)</span></Label>
+            <Label htmlFor="situation">Challenge <span className="text-muted-foreground text-xs font-normal ml-1">(context vs problem)</span></Label>
             <Input
               id="situation"
               value={situation}
               onChange={(e) => setSituation(e.target.value)}
-              placeholder="e.g., Sprint delivery was at risk due to unresolved dependencies"
+              placeholder="e.g., Critical release stalled due to unmanaged dependencies"
               className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20"
             />
           </div>
 
           {/* Action */}
           <div className="space-y-2">
-            <Label htmlFor="action">Action Taken <span className="text-muted-foreground text-xs font-normal ml-1">(what you did)</span></Label>
+            <Label htmlFor="action">Action <span className="text-muted-foreground text-xs font-normal ml-1">(your specific contribution)</span></Label>
             <Textarea
               id="action"
               value={action}
               onChange={(e) => setAction(e.target.value)}
-              placeholder="e.g., Facilitated a cross-team sync to unblock critical dependencies"
+              placeholder="e.g., Initiated daily cross-functional standups and created a dependency map"
               className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20 min-h-[80px] resize-none"
             />
           </div>
 
-          {/* Impact */}
+          {/* Result (mapped to impact field) */}
           <div className="space-y-2">
-            <Label htmlFor="impact">Impact <span className="text-muted-foreground text-xs font-normal ml-1">(outcome in business terms)</span></Label>
+            <Label htmlFor="impact">Result <span className="text-muted-foreground text-xs font-normal ml-1">(measurable outcome)</span></Label>
             <Textarea
               id="impact"
               value={impact}
               onChange={(e) => setImpact(e.target.value)}
-              placeholder="e.g., Delivered sprint on time, avoiding $50K delay cost"
+              placeholder="e.g., Unblocked deployment in 48h, preventing a 1-week slip"
               className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20 min-h-[80px] resize-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Impact Type */}
+            {/* Impact Category */}
             <div className="space-y-2">
-              <Label htmlFor="impactType">Impact Type</Label>
+              <Label htmlFor="impactType">Impact Category</Label>
               <Select value={impactType} onValueChange={(v) => setImpactType(v as ImpactType)}>
                 <SelectTrigger className="bg-black/20 border-white/10">
                   <SelectValue />
