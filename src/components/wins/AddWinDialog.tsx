@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useWinsContext } from '@/contexts/WinsContext';
-import { WinCategory, ImpactType, WIN_CATEGORIES, IMPACT_TYPES, Win } from '@/types/win';
+import { WinCategory, ImpactType, ImpactLevel, WIN_CATEGORIES, IMPACT_TYPES, IMPACT_LEVELS, Win } from '@/types/win';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -33,6 +33,7 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
   const [action, setAction] = useState('');
   const [impact, setImpact] = useState('');
   const [impactType, setImpactType] = useState<ImpactType>('time-saved');
+  const [impactLevel, setImpactLevel] = useState<ImpactLevel>('Medium');
   const [evidence, setEvidence] = useState('');
 
   const { addWin, updateWin } = useWinsContext();
@@ -47,11 +48,9 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
       setAction(winToEdit.action);
       setImpact(winToEdit.impact);
       setImpactType(winToEdit.impactType);
+      setImpactLevel(winToEdit.impactLevel || 'Medium'); // Default to Medium for existing records
       setEvidence(winToEdit.evidence || '');
     } else if (isOpen && !isEditing) {
-      // Reset only if opening in add mode
-      // Note: We avoid aggressive resetting to keep draft if just closed/reopened? 
-      // For now, let's reset to defaults if opening fresh Add
       if (!trigger) { // If controlled
         resetForm();
       }
@@ -65,6 +64,7 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
     setAction('');
     setImpact('');
     setImpactType('time-saved');
+    setImpactLevel('Medium');
     setEvidence('');
   };
 
@@ -85,6 +85,7 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
           action: action.trim(),
           impact: impact.trim(),
           impactType,
+          impactLevel,
           evidence: evidence.trim() || undefined,
         });
         toast.success('Win updated successfully! 📝');
@@ -96,6 +97,7 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
           action: action.trim(),
           impact: impact.trim(),
           impactType,
+          impactLevel,
           evidence: evidence.trim() || undefined,
         });
         toast.success('Win logged successfully! 🎉');
@@ -228,17 +230,37 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
               </Select>
             </div>
 
-            {/* Evidence */}
+            {/* Impact Level */}
             <div className="space-y-2">
-              <Label htmlFor="evidence">Evidence <span className="text-muted-foreground text-xs font-normal ml-1">(optional)</span></Label>
-              <Input
-                id="evidence"
-                value={evidence}
-                onChange={(e) => setEvidence(e.target.value)}
-                placeholder="Link or notes"
-                className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20"
-              />
+              <Label htmlFor="impactLevel">Impact Level</Label>
+              <Select value={impactLevel} onValueChange={(v) => setImpactLevel(v as ImpactLevel)}>
+                <SelectTrigger className="bg-black/20 border-white/10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="glass-card border-white/10">
+                  {Object.entries(IMPACT_LEVELS).map(([key, { label, color }]) => (
+                    <SelectItem key={key} value={key}>
+                      <span className="flex items-center gap-2">
+                        <span className={cn("w-2 h-2 rounded-full", color.replace('bg-', 'bg-current text-'))}></span>
+                        {label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+
+          {/* Evidence */}
+          <div className="space-y-2">
+            <Label htmlFor="evidence">Evidence <span className="text-muted-foreground text-xs font-normal ml-1">(optional)</span></Label>
+            <Input
+              id="evidence"
+              value={evidence}
+              onChange={(e) => setEvidence(e.target.value)}
+              placeholder="Link or notes"
+              className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20"
+            />
           </div>
 
           <div className="flex gap-3 pt-2">

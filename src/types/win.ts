@@ -1,4 +1,4 @@
-export type WinCategory = 
+export type WinCategory =
   | 'delivery'
   | 'stakeholder'
   | 'leadership'
@@ -6,12 +6,14 @@ export type WinCategory =
   | 'ai'
   | 'risk';
 
-export type ImpactType = 
+export type ImpactType =
   | 'time-saved'
   | 'cost-avoided'
   | 'risk-reduced'
   | 'quality-improved'
   | 'customer-satisfaction';
+
+export type ImpactLevel = 'High' | 'Medium' | 'Low';
 
 export interface Win {
   id: string;
@@ -21,10 +23,17 @@ export interface Win {
   action: string;
   impact: string;
   impactType: ImpactType;
+  impactLevel?: ImpactLevel;
   evidence?: string;
   createdAt: Date;
   updatedAt: Date;
 }
+
+export const IMPACT_LEVELS: Record<ImpactLevel, { label: string; color: string; value: number }> = {
+  High: { label: 'High Impact', color: 'text-emerald-800 bg-emerald-100 border-emerald-300', value: 3 },
+  Medium: { label: 'Medium Impact', color: 'text-green-600 bg-green-50 border-green-200', value: 2 },
+  Low: { label: 'Low Impact', color: 'text-slate-500 bg-slate-100 border-slate-200', value: 1 },
+};
 
 export interface WeeklyReflection {
   id: string;
