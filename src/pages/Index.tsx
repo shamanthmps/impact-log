@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Plus, LayoutDashboard, Clock, FileText, Sparkles, Zap, Search, Bell, LogOut, User } from 'lucide-react';
+import { Plus, LayoutDashboard, Clock, FileText, Sparkles, Zap, Search, Bell, LogOut, User, AlertTriangle, ShieldAlert, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,7 @@ function AppContent() {
   const [showProfile, setShowProfile] = useState(false);
   const { logout, currentUser } = useAuth();
   const { isGuest } = useWinsContext();
+  const navigate = useNavigate();
 
   // Show welcome toast for members (Guests)
   useEffect(() => {
@@ -102,11 +104,18 @@ function AppContent() {
                 <DropdownMenuLabel className="px-3 py-2">
                   <div className="font-bold text-gray-900">{currentUser?.displayName || 'User'}</div>
                   <div className="text-xs text-gray-500 font-normal">{currentUser?.email}</div>
+                  {isGuest && (
+                    <div className="mt-1 text-[10px] text-amber-600 font-bold uppercase tracking-wider">Guest Access</div>
+                  )}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-100 my-1" />
                 <DropdownMenuItem onClick={() => setShowProfile(true)} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
                   <User className="mr-2 h-4 w-4 text-gray-500" />
                   <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
+                  <Settings className="mr-2 h-4 w-4 text-gray-500" />
+                  <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-100 my-1" />
                 <DropdownMenuItem onClick={handleLogout} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-red-50 focus:bg-red-50 text-red-600 focus:text-red-700 outline-none">
@@ -127,6 +136,8 @@ function AppContent() {
 
       {/* Main Content Area */}
       <main className="container max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+        {/* Guest Warning Banner (REMOVED as requested, replaced by Toast) */}
 
         {/* Page Title & Motivation */}
         <div className="mb-10">
