@@ -126,7 +126,7 @@ This codebase is made public for portfolio demonstration and architectural refer
 
 ## 🌟 Start Your Journey
 
-Your career is a story worth telling well. Whether you store your data locally or deploy your own impactful cloud instance, **Impact Log** ensures you never lose sight of your professional value.
+Your career is a story worth telling well. **Impact Log** ensures you never lose sight of your professional value.
 
 *Ready to log your first win?*
 
