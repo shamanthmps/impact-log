@@ -42,7 +42,7 @@ export function WinsTimeline() {
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(w => 
+      filtered = filtered.filter(w =>
         w.situation.toLowerCase().includes(query) ||
         w.action.toLowerCase().includes(query) ||
         w.impact.toLowerCase().includes(query)
@@ -71,33 +71,37 @@ export function WinsTimeline() {
             className="pl-10 bg-white/50"
           />
         </div>
-        
-        <div className="flex gap-2">
-          <Select value={dateFilter} onValueChange={(v) => setDateFilter(v as DateFilter)}>
-            <SelectTrigger className="w-[140px] bg-white/50">
-              <SelectValue placeholder="Date range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
-              <SelectItem value="week">Last 7 Days</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="3months">Last 3 Months</SelectItem>
-            </SelectContent>
-          </Select>
 
-          <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as WinCategory | 'all')}>
-            <SelectTrigger className="w-[160px] bg-white/50">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {Object.entries(WIN_CATEGORIES).map(([key, { label }]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex-1 sm:flex-none">
+            <Select value={dateFilter} onValueChange={(v) => setDateFilter(v as DateFilter)}>
+              <SelectTrigger className="w-full sm:w-[140px] bg-white/50">
+                <SelectValue placeholder="Date range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="week">Last 7 Days</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="3months">Last 3 Months</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex-1 sm:flex-none">
+            <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as WinCategory | 'all')}>
+              <SelectTrigger className="w-full sm:w-[160px] bg-white/50">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {Object.entries(WIN_CATEGORIES).map(([key, { label }]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -105,7 +109,7 @@ export function WinsTimeline() {
       {filteredWins.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
-            {wins.length === 0 
+            {wins.length === 0
               ? "No wins logged yet. Start capturing your impact!"
               : "No wins match your filters."}
           </p>
@@ -113,13 +117,13 @@ export function WinsTimeline() {
       ) : (
         <div className="space-y-4">
           {filteredWins.map((win, index) => (
-            <div 
-              key={win.id} 
+            <div
+              key={win.id}
               className="animate-slide-up"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <WinCard 
-                win={win} 
+              <WinCard
+                win={win}
                 onDelete={handleDelete}
               />
             </div>

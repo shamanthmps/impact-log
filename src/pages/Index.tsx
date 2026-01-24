@@ -140,13 +140,13 @@ function AppContent() {
         </div>
 
         {/* Custom Navigation Pills */}
-        <div className="flex flex-wrap gap-2 mb-10">
+        <div className="flex sm:flex-wrap overflow-x-auto sm:overflow-visible gap-2 mb-10 pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setCurrentView(item.id)}
               className={cn(
-                "flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 border",
+                "flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 border whitespace-nowrap flex-shrink-0",
                 currentView === item.id
                   ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20"
                   : "bg-white text-gray-500 border-transparent hover:bg-gray-50 hover:text-gray-900"
