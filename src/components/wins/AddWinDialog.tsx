@@ -67,9 +67,11 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="primary" size="lg" className="gap-2 btn-primary-glow">
-            <Plus className="w-5 h-5" />
-            Add Win
+          <Button
+            className="btn-primary-glow bg-blue-600 hover:bg-blue-700 text-white gap-2 h-12 w-12 rounded-full sm:h-12 sm:w-auto sm:rounded-xl sm:px-6 p-0 sm:p-4 flex items-center justify-center"
+          >
+            <Plus className="w-6 h-6 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Add Win</span>
           </Button>
         )}
       </DialogTrigger>

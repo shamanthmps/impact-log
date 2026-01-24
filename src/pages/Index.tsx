@@ -68,7 +68,10 @@ function AppContent() {
       {/* Modern Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100/50">
         <div className="container max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <button
+            onClick={() => setCurrentView('dashboard')}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity focus:outline-none"
+          >
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary">
               <Zap className="w-6 h-6 fill-current" />
             </div>
@@ -77,18 +80,9 @@ function AppContent() {
                 {APP_CONFIG.APP_NAME}
               </h1>
             </div>
-          </div>
-
-          <div className="hidden md:flex items-center bg-gray-50 rounded-xl px-4 py-2 w-64 border border-gray-100">
-            <Search className="w-4 h-4 text-gray-400 mr-2" />
-            <input type="text" placeholder="Search entries..." className="bg-transparent border-none text-sm outline-none w-full placeholder:text-gray-400" />
-          </div>
+          </button>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            <button className="hidden sm:flex w-10 h-10 rounded-full bg-white border border-gray-100 items-center justify-center text-gray-500 hover:text-blue-600 hover:shadow-md transition-all">
-              <Bell className="w-5 h-5" />
-            </button>
-            <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
             <AddWinDialog />
 
             <DropdownMenu>

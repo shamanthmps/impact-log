@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle, Loader2, Cloud } from 'lucide-react';
+import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle, Loader2, Cloud, ArrowLeft } from 'lucide-react';
 import { useWins } from '@/hooks/useWins';
 import { toast } from 'sonner';
 import { useProfile, UserProfile } from '@/hooks/useProfile';
@@ -12,6 +13,7 @@ import { uploadToGoogleDrive } from '@/lib/drive';
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState('profile');
+    const navigate = useNavigate();
     const { currentUser } = useAuth();
     const { wins, reflections } = useWins();
     const { profile, updateProfile, isLoading: isProfileLoading } = useProfile();
@@ -69,9 +71,22 @@ export default function Settings() {
         <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col md:flex-row">
             {/* Sidebar / Mobile Nav */}
             <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-200 bg-white z-10 sticky top-0 md:static">
-                <div className="px-6 py-4 md:py-6 md:mb-2">
-                    <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest hidden md:block">User Settings</h2>
-                    <h2 className="text-lg font-bold text-gray-900 md:hidden">Settings</h2>
+                <div className="px-6 py-4 md:py-6 md:mb-2 flex items-center gap-3">
+                    <button onClick={() => navigate('/')} className="md:hidden text-gray-500 hover:text-black p-1 -ml-1">
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div>
+                        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest hidden md:block">User Settings</h2>
+                        <h2 className="text-lg font-bold text-gray-900 md:hidden">Settings</h2>
+                    </div>
+                </div>
+
+                {/* Desktop Back Button */}
+                <div className="hidden md:block px-6 mb-4">
+                    <button onClick={() => navigate('/')} className="flex items-center text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors group">
+                        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+                        Back to Dashboard
+                    </button>
                 </div>
 
                 {/* Mobile Horizontal Scroll / Desktop Vertical List */}
