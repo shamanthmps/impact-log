@@ -3,13 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle, Loader2 } from 'lucide-react';
+import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle, Loader2, Cloud } from 'lucide-react';
 import { useWins } from '@/hooks/useWins';
 import { toast } from 'sonner';
 import { useProfile, UserProfile } from '@/hooks/useProfile';
+import { useAuth } from '@/contexts/AuthContext';
+import { uploadToGoogleDrive } from '@/lib/drive';
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState('profile');
+    const { currentUser } = useAuth();
     const { wins, reflections } = useWins();
     const { profile, updateProfile, isLoading: isProfileLoading } = useProfile();
 
@@ -64,12 +67,15 @@ export default function Settings() {
 
     return (
         <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col md:flex-row">
-            {/* Sidebar */}
-            <aside className="w-full md:w-64 border-r border-gray-200 pt-6 md:min-h-screen bg-white">
-                <div className="px-6 mb-8">
-                    <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">User Settings</h2>
+            {/* Sidebar / Mobile Nav */}
+            <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-200 bg-white z-10 sticky top-0 md:static">
+                <div className="px-6 py-4 md:py-6 md:mb-2">
+                    <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest hidden md:block">User Settings</h2>
+                    <h2 className="text-lg font-bold text-gray-900 md:hidden">Settings</h2>
                 </div>
-                <nav className="space-y-1">
+
+                {/* Mobile Horizontal Scroll / Desktop Vertical List */}
+                <nav className="flex md:block overflow-x-auto no-scrollbar pb-2 md:pb-0 px-4 md:px-0 space-x-2 md:space-x-0 md:space-y-1">
                     {[
                         { id: 'profile', label: 'Profile', icon: User },
                         { id: 'notifications', label: 'Notifications', icon: Bell },
@@ -79,17 +85,22 @@ export default function Settings() {
                     ].map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => setActiveTab(item.id)}
-                            className={`w-full flex items-center gap-3 px-6 py-4 text-xs font-bold uppercase tracking-wider transition-colors relative
-                ${activeTab === item.id
-                                    ? 'bg-blue-50 text-primary'
-                                    : 'text-gray-500 hover:bg-gray-50 hover:text-black'
+                            onClick={() => {
+                                setActiveTab(item.id);
+                                // On mobile, scroll to section (simplified behavior for now just sets tab)
+                                document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }}
+                            className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-2 md:px-6 md:py-4 text-xs font-bold uppercase tracking-wider transition-colors relative rounded-full md:rounded-none border md:border-0
+                            ${activeTab === item.id
+                                    ? 'bg-blue-600 text-white md:bg-blue-50 md:text-primary border-blue-600'
+                                    : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:text-black'
                                 }`}
                         >
+                            {/* Desktop Indicator */}
                             {activeTab === item.id && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary hidden md:block" />
                             )}
-                            <item.icon className={`w-4 h-4 ${activeTab === item.id ? 'text-primary' : ''}`} />
+                            <item.icon className={`w-4 h-4 ${activeTab === item.id ? 'text-white md:text-primary' : ''}`} />
                             {item.label}
                         </button>
                     ))}
@@ -97,8 +108,8 @@ export default function Settings() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-6 md:p-12 overflow-y-auto">
-                <div className="max-w-3xl">
+            <main className="flex-1 p-4 md:p-12 overflow-y-auto">
+                <div className="max-w-3xl space-y-12 pb-20"> {/* pb-20 for mobile bottom spacing */}
                     <div className="mb-12">
                         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Profile Settings</h1>
                         <p className="text-gray-500">Update your professional presence and personal career details.</p>
@@ -107,10 +118,11 @@ export default function Settings() {
                     <div className="space-y-12">
 
                         {/* 01. Profile Info */}
-                        <section className="space-y-6">
+                        <section id="profile" className="space-y-6 scroll-mt-24">
                             <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">01. Profile Information</h3>
-
+                            {/* ... Content ... */}
                             <div className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                {/* ... Inputs ... */}
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Full Name</Label>
                                     <Input
@@ -144,9 +156,9 @@ export default function Settings() {
                         </section>
 
                         {/* 02. Alerts */}
-                        <section className="space-y-6">
+                        <section id="notifications" className="space-y-6 scroll-mt-24">
                             <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">02. Achievement Alerts</h3>
-
+                            {/* ... Content ... */}
                             <div className="space-y-4">
                                 <div className="bg-white p-6 flex items-center justify-between border border-gray-100 rounded-xl shadow-sm">
                                     <div>
@@ -167,7 +179,7 @@ export default function Settings() {
                         </section>
 
                         {/* 03. Account Data */}
-                        <section className="space-y-6">
+                        <section id="data" className="space-y-6 scroll-mt-24">
                             <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">03. Account Data</h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -193,6 +205,36 @@ export default function Settings() {
                                         <p className="text-[10px] text-gray-500 mt-1 uppercase">Move inactive records to storage</p>
                                     </div>
                                 </button>
+
+                                {(currentUser?.email?.toLowerCase() === 'shamanthcareers@gmail.com') && (
+                                    <button
+                                        onClick={async () => {
+                                            const toastId = toast.loading("Syncing to Google Drive...");
+                                            try {
+                                                const dataToBackup = {
+                                                    wins,
+                                                    reflections,
+                                                    profile,
+                                                    backupDate: new Date().toISOString(),
+                                                };
+                                                await uploadToGoogleDrive(dataToBackup);
+                                                toast.success("Successfully backed up to Google Drive", { id: toastId });
+                                            } catch (error) {
+                                                console.error(error);
+                                                toast.error("Failed to backup to Drive", { id: toastId });
+                                            }
+                                        }}
+                                        className="bg-white border border-blue-200 bg-blue-50/50 p-6 flex items-center gap-4 hover:border-blue-400 hover:shadow-md transition-all group text-left rounded-xl shadow-sm"
+                                    >
+                                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-colors text-blue-600">
+                                            <Cloud className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider">Sync to Google Drive</h4>
+                                            <p className="text-[10px] text-blue-600 mt-1 uppercase">Backup data to cloud storage</p>
+                                        </div>
+                                    </button>
+                                )}
                             </div>
 
                             <div className="pt-4">
