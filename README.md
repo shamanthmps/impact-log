@@ -65,7 +65,7 @@ graph TD
 ### 📅 Smart Visualization
 - **Dashboard**: Real-time metrics for your current impact momentum.
 - **Timeline**: Chronological history of your professional journey.
-- **Manager Ready**: Select a date range and instantly generate a formatted summary for your 1:1s.
+- **Impact Report**: Select a date range and instantly generate a formatted summary for your 1:1s.
 
 ### 🔒 Security & Privacy
 - **Dual Mode**: 

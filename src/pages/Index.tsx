@@ -59,7 +59,7 @@ function AppContent() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'timeline', label: 'Timeline', icon: Clock },
-    { id: 'manager', label: 'Manager Ready', icon: FileText },
+    { id: 'manager', label: 'Impact Report', icon: FileText },
     { id: 'reflection', label: 'Reflect', icon: Sparkles },
   ] as const;
 
@@ -202,7 +202,7 @@ function AppContent() {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setCurrentView('manager')} className="cursor-pointer gap-2 p-3 font-medium text-gray-700 hover:text-emerald-600 focus:text-emerald-600 hover:bg-emerald-50 focus:bg-emerald-50 rounded-lg">
                           <FileText className="w-4 h-4" />
-                          Manager Export
+                          Impact Report
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
