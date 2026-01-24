@@ -34,12 +34,12 @@ graph TD
     subgraph Client ["🖥️ Client (Progressive Web App)"]
         UI[React 18 + Tailwind]
         Logic[TypeScript Business Logic]
-        Store[Local Storage (Guest Mode)]
+        Store["Local Storage (Guest Mode)"]
     end
     
     subgraph Cloud ["☁️ Cloud Infrastructure (Firebase)"]
-        Auth[🔐 Authentication (Google OAuth)]
-        DB[(🗄️ Firestore Database)]
+        Auth["🔐 Authentication (Google OAuth)"]
+        DB[("🗄️ Firestore Database")]
         Host[🚀 Firebase Hosting]
     end
 
