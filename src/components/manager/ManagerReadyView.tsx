@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { format, subDays, subMonths, startOfWeek, endOfWeek } from 'date-fns';
-import { Copy, Download, CalendarIcon, FileText, CheckCircle } from 'lucide-react';
+import { Copy, Download, CalendarIcon, FileText, CheckCircle, ArrowRight } from 'lucide-react';
 import { useWinsContext } from '@/contexts/WinsContext';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ export function ManagerReadyView() {
     const dateRange = `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
     const header = `📊 Impact Summary (${dateRange})\n\n`;
     const winsText = filteredWins.map((win, i) => formatWinForCopy(win, i)).join('\n\n');
-    
+
     return header + winsText;
   };
 
@@ -42,7 +42,7 @@ export function ManagerReadyView() {
       toast.error('No wins to copy');
       return;
     }
-    
+
     await navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
   };
@@ -67,56 +67,60 @@ export function ManagerReadyView() {
   return (
     <div className="space-y-6">
       {/* Date Range Selection */}
-      <GlassCard className="p-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground">Date Range:</span>
-            
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="bg-white/50">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {format(startDate, 'MMM d')}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={(d) => d && setStartDate(d)}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+      <GlassCard className="p-4 sm:p-5">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
 
-            <span className="text-muted-foreground">to</span>
+          {/* Date Picker Section */}
+          <div className="space-y-2 w-full lg:w-auto">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pl-1">Date Range</span>
+            <div className="flex items-center gap-2 bg-white/50 p-1 rounded-xl border border-white/40 w-full sm:w-auto">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" className="flex-1 sm:w-[130px] justify-start text-left font-normal hover:bg-white/60 h-9">
+                    <CalendarIcon className="w-4 h-4 mr-2 text-blue-600" />
+                    {format(startDate, 'MMM d')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={(d) => d && setStartDate(d)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="bg-white/50">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {format(endDate, 'MMM d, yyyy')}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={(d) => d && setEndDate(d)}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+              <div className="text-muted-foreground/50 px-1">
+                <ArrowRight className="w-4 h-4" />
+              </div>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" className="flex-1 sm:w-[130px] justify-start text-left font-normal hover:bg-white/60 h-9">
+                    <CalendarIcon className="w-4 h-4 mr-2 text-blue-600" />
+                    {format(endDate, 'MMM d, yyyy')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(d) => d && setEndDate(d)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
-          <div className="flex gap-2 ml-auto">
-            <Button variant="outline" onClick={handleCopy} className="bg-white/50">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 w-full lg:w-auto pt-1 lg:pt-6">
+            <Button variant="secondary" onClick={handleCopy} className="flex-1 lg:flex-none border border-white/40 bg-white/40 hover:bg-white/60 shadow-sm">
               <Copy className="w-4 h-4 mr-2" />
               Copy
             </Button>
-            <Button variant="outline" onClick={handleExport} className="bg-white/50">
+            <Button variant="default" onClick={handleExport} className="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 text-white">
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
@@ -140,8 +144,8 @@ export function ManagerReadyView() {
           </div>
 
           {filteredWins.map((win, index) => (
-            <GlassCard 
-              key={win.id} 
+            <GlassCard
+              key={win.id}
               className="animate-slide-up"
               style={{ animationDelay: `${index * 50}ms` } as React.CSSProperties}
             >
@@ -149,7 +153,7 @@ export function ManagerReadyView() {
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="text-sm font-semibold text-primary">{index + 1}</span>
                 </div>
-                
+
                 <div className="flex-1 space-y-3">
                   <div>
                     <p className="text-xs font-medium text-primary uppercase tracking-wide mb-1">
