@@ -19,6 +19,7 @@ import { ProfileDialogContent } from '@/components/profile/ProfileDialog';
 import { WinsTimeline } from '@/components/wins/WinsTimeline';
 import { ManagerReadyView } from '@/components/manager/ManagerReadyView';
 import { WeeklyReflection } from '@/components/reflection/WeeklyReflection';
+import { DataPersistenceWarning } from '@/components/ui/DataPersistenceWarning';
 import { cn } from '@/lib/utils';
 import { MOTIVATIONAL_LINES, APP_CONFIG, DATE_CONFIG } from '@/lib/constants';
 import { toast } from 'sonner';
@@ -32,17 +33,7 @@ function AppContent() {
   const { isGuest } = useWinsContext();
   const navigate = useNavigate();
 
-  // Show welcome toast for members (Guests)
-  useEffect(() => {
-    if (isGuest) {
-      toast.warning("Member Access Active", {
-        description: "Your data is securely saved in your browser. Contact Admin for cross-device cloud storage.",
-        duration: 8000,
-        className: "!border-2 !border-red-500 !bg-red-50 !text-red-900",
-        descriptionClassName: "!text-red-800 !font-semibold"
-      });
-    }
-  }, [isGuest]);
+  // Toast warning removed in favor of persistent DataPersistenceWarning component
 
   const handleLogout = async () => {
     try {
@@ -64,7 +55,10 @@ function AppContent() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] text-foreground">
+    <div className="min-h-screen bg-[#F8F9FB] text-foreground pb-20 sm:pb-0 relative">
+      {/* Persistent Warning for Guest Users */}
+      <DataPersistenceWarning />
+
       {/* Modern Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100/50">
         <div className="container max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">

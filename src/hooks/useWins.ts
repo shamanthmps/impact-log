@@ -169,12 +169,8 @@ export function useWins() {
       setWins(prev => [newWin, ...prev]); // Prepend to list
       logger.info('Win added locally (Guest)', 'useWins');
 
-      toast.warning("Achievement Saved Locally", {
-        description: "This win is stored in your browser. Contact Admin for permanent cloud storage.",
-        duration: 5000,
-        className: "border-amber-400 bg-amber-50 text-amber-900",
-        descriptionClassName: "text-amber-700"
-      });
+      // Trigger persistent warning
+      window.dispatchEvent(new CustomEvent('show-guest-warning'));
 
       return newWin;
     }
@@ -207,6 +203,8 @@ export function useWins() {
           ? { ...win, ...updates, updatedAt: new Date() }
           : win
       ));
+      // Trigger persistent warning
+      window.dispatchEvent(new CustomEvent('show-guest-warning'));
     }
   }, [currentUser, isAdmin]);
 
@@ -223,6 +221,8 @@ export function useWins() {
       }
     } else {
       setWins(prev => prev.filter(win => win.id !== id));
+      // Trigger warning on delete? Maybe not strictly necessary strictly strictly, but safe.
+      window.dispatchEvent(new CustomEvent('show-guest-warning'));
     }
   }, [currentUser, isAdmin]);
 
@@ -250,6 +250,8 @@ export function useWins() {
         createdAt: new Date(),
       };
       setReflections(prev => [newReflection, ...prev]);
+      // Trigger persistent warning
+      window.dispatchEvent(new CustomEvent('show-guest-warning'));
       return newReflection;
     }
   }, [currentUser, isAdmin]);
