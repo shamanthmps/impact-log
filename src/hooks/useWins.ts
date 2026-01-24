@@ -18,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { DATE_CONFIG, STORAGE_KEYS } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { storageService } from '@/lib/storage';
+import { toast } from 'sonner';
 
 const ADMIN_EMAIL = 'shamanthcareers@gmail.com';
 
@@ -166,6 +167,14 @@ export function useWins() {
       };
       setWins(prev => [newWin, ...prev]); // Prepend to list
       logger.info('Win added locally (Guest)', 'useWins');
+
+      toast.warning("Achievement Saved Locally", {
+        description: "This win is stored in your browser. Contact Admin for permanent cloud storage.",
+        duration: 5000,
+        className: "border-amber-400 bg-amber-50 text-amber-900",
+        descriptionClassName: "text-amber-700"
+      });
+
       return newWin;
     }
   }, [currentUser, isAdmin]);

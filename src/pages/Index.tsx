@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Plus, LayoutDashboard, Clock, FileText, Sparkles, Zap, Search, Bell, LogOut, User, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { Plus, LayoutDashboard, Clock, FileText, Sparkles, Zap, Search, Bell, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ import { ManagerReadyView } from '@/components/manager/ManagerReadyView';
 import { WeeklyReflection } from '@/components/reflection/WeeklyReflection';
 import { cn } from '@/lib/utils';
 import { MOTIVATIONAL_LINES, APP_CONFIG, DATE_CONFIG } from '@/lib/constants';
+import { toast } from 'sonner';
 
 type View = 'dashboard' | 'timeline' | 'manager' | 'reflection';
 
@@ -28,6 +29,18 @@ function AppContent() {
   const [showProfile, setShowProfile] = useState(false);
   const { logout, currentUser } = useAuth();
   const { isGuest } = useWinsContext();
+
+  // Show welcome toast for members (Guests)
+  useEffect(() => {
+    if (isGuest) {
+      toast.warning("Member Access Active", {
+        description: "Your data is securely saved in your browser. Contact Admin for cross-device cloud storage.",
+        duration: 8000,
+        className: "!border-2 !border-red-500 !bg-red-50 !text-red-900",
+        descriptionClassName: "!text-red-800 !font-semibold"
+      });
+    }
+  }, [isGuest]);
 
   const handleLogout = async () => {
     try {
@@ -70,11 +83,6 @@ function AppContent() {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            {isGuest && (
-              <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                GUEST MODE
-              </span>
-            )}
             <button className="hidden sm:flex w-10 h-10 rounded-full bg-white border border-gray-100 items-center justify-center text-gray-500 hover:text-blue-600 hover:shadow-md transition-all">
               <Bell className="w-5 h-5" />
             </button>
@@ -85,7 +93,7 @@ function AppContent() {
               <DropdownMenuTrigger asChild>
                 <button className={cn(
                   "w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-md hover:shadow-lg transition-all ml-1 cursor-pointer",
-                  isGuest ? "bg-amber-500" : "bg-gradient-to-br from-blue-500 to-blue-600"
+                  isGuest ? "bg-gray-500" : "bg-gradient-to-br from-blue-500 to-blue-600"
                 )}>
                   {currentUser?.displayName?.[0]?.toUpperCase() || <User className="w-5 h-5" />}
                 </button>
@@ -94,9 +102,6 @@ function AppContent() {
                 <DropdownMenuLabel className="px-3 py-2">
                   <div className="font-bold text-gray-900">{currentUser?.displayName || 'User'}</div>
                   <div className="text-xs text-gray-500 font-normal">{currentUser?.email}</div>
-                  {isGuest && (
-                    <div className="mt-1 text-[10px] text-amber-600 font-bold uppercase tracking-wider">Guest Access</div>
-                  )}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-100 my-1" />
                 <DropdownMenuItem onClick={() => setShowProfile(true)} className="rounded-xl cursor-pointer px-3 py-2 hover:bg-gray-50 focus:bg-gray-50 outline-none">
@@ -122,21 +127,6 @@ function AppContent() {
 
       {/* Main Content Area */}
       <main className="container max-w-6xl mx-auto px-4 sm:px-6 py-8">
-
-        {/* Guest Warning Banner */}
-        {isGuest && (
-          <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 flex items-start sm:items-center gap-4 shadow-sm animate-in slide-in-from-top-4 duration-500">
-            <div className="p-2 bg-amber-100 rounded-full flex-shrink-0">
-              <ShieldAlert className="w-5 h-5 text-amber-600" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-bold text-amber-900">Guest Mode Active</h3>
-              <p className="text-sm text-amber-700 mt-0.5">
-                Your data is securely stored on this device only. To enable cloud synchronization and protect your data, please contact the administrator for premium access or download your data from Settings.
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Page Title & Motivation */}
         <div className="mb-10">
