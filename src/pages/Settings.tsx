@@ -4,14 +4,43 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { User, Bell, Shield, Database, Eye, Download, Archive, AlertTriangle } from 'lucide-react';
+import { useWins } from '@/hooks/useWins';
+import { toast } from 'sonner';
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState('profile');
+    const { wins, reflections } = useWins();
+
+    const handleExportData = () => {
+        try {
+            const dataToExport = {
+                wins,
+                reflections,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `impact-log-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success("Data export started successfully.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to export data.");
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
+        <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col md:flex-row">
             {/* Sidebar */}
-            <aside className="w-full md:w-64 border-r border-[#333] pt-6 md:min-h-screen bg-[#0A0A0A]">
+            <aside className="w-full md:w-64 border-r border-gray-200 pt-6 md:min-h-screen bg-white">
                 <div className="px-6 mb-8">
                     <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">User Settings</h2>
                 </div>
@@ -28,8 +57,8 @@ export default function Settings() {
                             onClick={() => setActiveTab(item.id)}
                             className={`w-full flex items-center gap-3 px-6 py-4 text-xs font-bold uppercase tracking-wider transition-colors relative
                 ${activeTab === item.id
-                                    ? 'bg-[#1A1A1A] text-white'
-                                    : 'text-muted-foreground hover:bg-[#111] hover:text-white'
+                                    ? 'bg-blue-50 text-primary'
+                                    : 'text-gray-500 hover:bg-gray-50 hover:text-black'
                                 }`}
                         >
                             {activeTab === item.id && (
@@ -46,8 +75,8 @@ export default function Settings() {
             <main className="flex-1 p-6 md:p-12 overflow-y-auto">
                 <div className="max-w-3xl">
                     <div className="mb-12">
-                        <h1 className="text-4xl font-black text-white uppercase tracking-tighter mb-2">Profile Settings</h1>
-                        <p className="text-muted-foreground">Update your professional presence and personal career details.</p>
+                        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Profile Settings</h1>
+                        <p className="text-gray-500">Update your professional presence and personal career details.</p>
                     </div>
 
                     <div className="space-y-12">
@@ -56,28 +85,28 @@ export default function Settings() {
                         <section className="space-y-6">
                             <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">01. Profile Information</h3>
 
-                            <div className="space-y-6">
+                            <div className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Full Name</Label>
+                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Full Name</Label>
                                     <Input
                                         defaultValue="Alexander Sterling"
-                                        className="bg-transparent border-0 border-b border-[#333] rounded-none px-0 text-2xl font-bold h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors"
+                                        className="bg-transparent border-0 border-b border-gray-200 rounded-none px-0 text-xl font-bold h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-all placeholder:text-gray-300"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Professional Title</Label>
+                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Professional Title</Label>
                                     <Input
                                         defaultValue="Chief Impact Officer"
-                                        className="bg-transparent border-0 border-b border-[#333] rounded-none px-0 text-2xl font-bold h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors"
+                                        className="bg-transparent border-0 border-b border-gray-200 rounded-none px-0 text-xl font-bold h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-all placeholder:text-gray-300"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Impact Statement</Label>
+                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Impact Statement</Label>
                                     <Input
                                         defaultValue="Driving sustainable growth through data-driven architectural innovation."
-                                        className="bg-transparent border-0 border-b border-[#333] rounded-none px-0 text-xl text-muted-foreground h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-colors"
+                                        className="bg-transparent border-0 border-b border-gray-200 rounded-none px-0 text-lg text-gray-500 h-auto py-2 focus-visible:ring-0 focus-visible:border-primary transition-all placeholder:text-gray-300"
                                     />
                                 </div>
                             </div>
@@ -88,28 +117,20 @@ export default function Settings() {
                             <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">02. Achievement Alerts</h3>
 
                             <div className="space-y-4">
-                                <div className="bg-[#111] p-6 flex items-center justify-between border border-[#222]">
+                                <div className="bg-white p-6 flex items-center justify-between border border-gray-100 rounded-xl shadow-sm">
                                     <div>
-                                        <h4 className="text-sm font-bold text-white uppercase">Real-Time Achievement Updates</h4>
-                                        <p className="text-xs text-muted-foreground mt-1">Notify me as soon as a milestone is reached</p>
+                                        <h4 className="text-sm font-bold text-gray-900 uppercase">Real-Time Achievement Updates</h4>
+                                        <p className="text-xs text-gray-500 mt-1">Notify me as soon as a milestone is reached</p>
                                     </div>
                                     <Switch defaultChecked className="data-[state=checked]:bg-primary" />
                                 </div>
 
-                                <div className="bg-[#111] p-6 flex items-center justify-between border border-[#222]">
+                                <div className="bg-white p-6 flex items-center justify-between border border-gray-100 rounded-xl shadow-sm">
                                     <div>
-                                        <h4 className="text-sm font-bold text-white uppercase">Weekly Impact Digest</h4>
-                                        <p className="text-xs text-muted-foreground mt-1">A summarized report of your career movement</p>
+                                        <h4 className="text-sm font-bold text-gray-900 uppercase">Weekly Impact Digest</h4>
+                                        <p className="text-xs text-gray-500 mt-1">A summarized report of your career movement</p>
                                     </div>
                                     <Switch defaultChecked className="data-[state=checked]:bg-primary" />
-                                </div>
-
-                                <div className="bg-[#111] p-6 flex items-center justify-between border border-[#222]">
-                                    <div>
-                                        <h4 className="text-sm font-bold text-white uppercase">Network Connection Alerts</h4>
-                                        <p className="text-xs text-muted-foreground mt-1">Alert me when industry leaders interact with my profile</p>
-                                    </div>
-                                    <Switch disabled />
                                 </div>
                             </div>
                         </section>
@@ -119,29 +140,32 @@ export default function Settings() {
                             <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">03. Account Data</h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button className="bg-[#111] border border-[#222] p-6 flex items-center gap-4 hover:bg-[#1A1A1A] transition-colors group text-left">
-                                    <div className="w-10 h-10 bg-[#222] rounded flex items-center justify-center group-hover:bg-[#333]">
-                                        <Download className="w-5 h-5 text-white" />
+                                <button
+                                    onClick={handleExportData}
+                                    className="bg-white border border-gray-100 p-6 flex items-center gap-4 hover:border-primary/50 hover:shadow-md transition-all group text-left rounded-xl shadow-sm"
+                                >
+                                    <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+                                        <Download className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Export Career Data</h4>
-                                        <p className="text-[10px] text-muted-foreground mt-1 uppercase">Download all achievements as JSON/PDF</p>
+                                        <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Export Career Data</h4>
+                                        <p className="text-[10px] text-gray-500 mt-1 uppercase">Download all achievements as JSON</p>
                                     </div>
                                 </button>
 
-                                <button className="bg-[#111] border border-[#222] p-6 flex items-center gap-4 hover:bg-[#1A1A1A] transition-colors group text-left">
-                                    <div className="w-10 h-10 bg-[#222] rounded flex items-center justify-center group-hover:bg-[#333]">
-                                        <Archive className="w-5 h-5 text-white" />
+                                <button className="bg-white border border-gray-100 p-6 flex items-center gap-4 hover:border-primary/50 hover:shadow-md transition-all group text-left rounded-xl shadow-sm">
+                                    <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+                                        <Archive className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Archive History</h4>
-                                        <p className="text-[10px] text-muted-foreground mt-1 uppercase">Move inactive records to storage</p>
+                                        <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Archive History</h4>
+                                        <p className="text-[10px] text-gray-500 mt-1 uppercase">Move inactive records to storage</p>
                                     </div>
                                 </button>
                             </div>
 
                             <div className="pt-4">
-                                <button className="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-400 flex items-center gap-2">
+                                <button className="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-600 flex items-center gap-2 px-4 py-2 hover:bg-red-50 rounded-lg transition-colors">
                                     <AlertTriangle className="w-3 h-3" />
                                     Delete Account Permanently
                                 </button>
@@ -150,11 +174,11 @@ export default function Settings() {
 
                         {/* Action Bar */}
                         <div className="pt-8">
-                            <Button className="w-full h-14 bg-primary text-black hover:bg-primary/90 font-black uppercase tracking-widest text-lg rounded-sm">
+                            <Button className="w-full h-14 text-white hover:bg-primary/90 font-black uppercase tracking-widest text-lg rounded-xl shadow-lg shadow-primary/20">
                                 Save All Changes
                             </Button>
-                            <p className="text-center text-[10px] text-muted-foreground uppercase tracking-widest mt-4">
-                                Last synced: 2 minutes ago
+                            <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest mt-4">
+                                Last synced: Just now
                             </p>
                         </div>
 

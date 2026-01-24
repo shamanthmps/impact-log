@@ -1,133 +1,162 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Win, WeeklyReflection } from '@/types/win';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
-import { storageService } from '@/lib/storage';
-import { STORAGE_KEYS, DATE_CONFIG } from '@/lib/constants';
+import { db } from '@/lib/firebase';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  Timestamp
+} from 'firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
+import { DATE_CONFIG } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 
-// Type for raw storage data (dates are strings when serialized)
-interface RawWin extends Omit<Win, 'date' | 'createdAt' | 'updatedAt'> {
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface RawReflection extends Omit<WeeklyReflection, 'weekStartDate' | 'createdAt'> {
-  weekStartDate: string;
-  createdAt: string;
-}
-
-/**
- * Parse dates from storage format (string) to Date objects
- */
-function parseWinDates(win: RawWin): Win {
-  return {
-    ...win,
-    date: new Date(win.date),
-    createdAt: new Date(win.createdAt),
-    updatedAt: new Date(win.updatedAt),
-  };
-}
-
-function parseReflectionDates(reflection: RawReflection): WeeklyReflection {
-  return {
-    ...reflection,
-    weekStartDate: new Date(reflection.weekStartDate),
-    createdAt: new Date(reflection.createdAt),
-  };
-}
-
-/**
- * Custom hook for managing wins and reflections data
- * Handles persistence to localStorage with error handling
- */
 export function useWins() {
+  const { currentUser } = useAuth();
   const [wins, setWins] = useState<Win[]>([]);
   const [reflections, setReflections] = useState<WeeklyReflection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // Load from localStorage on mount
+  // Subscribe to Wins
   useEffect(() => {
-    try {
-      const storedWins = storageService.get<RawWin[]>(STORAGE_KEYS.WINS);
-      if (storedWins && Array.isArray(storedWins)) {
-        setWins(storedWins.map(parseWinDates));
-        logger.debug(`Loaded ${storedWins.length} wins from storage`, 'useWins');
-      }
-
-      const storedReflections = storageService.get<RawReflection[]>(STORAGE_KEYS.REFLECTIONS);
-      if (storedReflections && Array.isArray(storedReflections)) {
-        setReflections(storedReflections.map(parseReflectionDates));
-        logger.debug(`Loaded ${storedReflections.length} reflections from storage`, 'useWins');
-      }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to load data');
-      logger.error('Error loading data from localStorage', 'useWins', error);
-      setError(error);
-    } finally {
+    if (!currentUser) {
+      setWins([]);
       setIsLoading(false);
+      return;
     }
-  }, []);
 
-  // Persist wins to localStorage
+    const q = query(
+      collection(db, 'wins'),
+      where('userId', '==', currentUser.uid),
+      orderBy('date', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedWins = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          date: data.date?.toDate() || new Date(),
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date(),
+        } as Win;
+      });
+      setWins(fetchedWins);
+      setIsLoading(false);
+    }, (err) => {
+      console.error("Error fetching wins:", err);
+      setError(err);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  // Subscribe to Reflections
   useEffect(() => {
-    if (!isLoading) {
-      const success = storageService.set(STORAGE_KEYS.WINS, wins);
-      if (!success) {
-        logger.warn('Failed to persist wins to storage', 'useWins');
-      }
+    if (!currentUser) {
+      setReflections([]);
+      return;
     }
-  }, [wins, isLoading]);
 
-  // Persist reflections to localStorage
-  useEffect(() => {
-    if (!isLoading) {
-      const success = storageService.set(STORAGE_KEYS.REFLECTIONS, reflections);
-      if (!success) {
-        logger.warn('Failed to persist reflections to storage', 'useWins');
-      }
+    const q = query(
+      collection(db, 'reflections'),
+      where('userId', '==', currentUser.uid),
+      orderBy('weekStartDate', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedReflections = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          weekStartDate: data.weekStartDate?.toDate() || new Date(),
+          createdAt: data.createdAt?.toDate() || new Date(),
+        } as WeeklyReflection;
+      });
+      setReflections(fetchedReflections);
+    }, (err) => {
+      console.error("Error fetching reflections:", err);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  const addWin = useCallback(async (winData: Omit<Win, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!currentUser) throw new Error("User not authenticated");
+
+    try {
+      const newWin = {
+        ...winData,
+        userId: currentUser.uid,
+        date: Timestamp.fromDate(winData.date),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      };
+
+      const docRef = await addDoc(collection(db, 'wins'), newWin);
+      logger.info('Win added to Firestore', 'useWins', { id: docRef.id });
+      return { ...winData, id: docRef.id };
+    } catch (err) {
+      logger.error('Failed to add win', 'useWins', err);
+      throw err;
     }
-  }, [reflections, isLoading]);
+  }, [currentUser]);
 
-  const addWin = useCallback((win: Omit<Win, 'id' | 'createdAt' | 'updatedAt'>): Win => {
-    const newWin: Win = {
-      ...win,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setWins(prev => [newWin, ...prev]);
-    logger.info('Win added', 'useWins', { id: newWin.id, category: newWin.category });
-    return newWin;
-  }, []);
+  const updateWin = useCallback(async (id: string, updates: Partial<Omit<Win, 'id' | 'createdAt'>>) => {
+    if (!currentUser) return;
+    try {
+      // Convert Date objects to Timestamps if present
+      const firestoreUpdates: any = { ...updates, updatedAt: Timestamp.now() };
+      if (updates.date) firestoreUpdates.date = Timestamp.fromDate(updates.date);
 
-  const updateWin = useCallback((id: string, updates: Partial<Omit<Win, 'id' | 'createdAt'>>): void => {
-    setWins(prev => prev.map(win =>
-      win.id === id
-        ? { ...win, ...updates, updatedAt: new Date() }
-        : win
-    ));
-    logger.info('Win updated', 'useWins', { id });
-  }, []);
+      await updateDoc(doc(db, 'wins', id), firestoreUpdates);
+      logger.info('Win updated', 'useWins', { id });
+    } catch (err) {
+      logger.error('Failed to update win', 'useWins', err);
+      throw err;
+    }
+  }, [currentUser]);
 
-  const deleteWin = useCallback((id: string): void => {
-    setWins(prev => prev.filter(win => win.id !== id));
-    logger.info('Win deleted', 'useWins', { id });
-  }, []);
+  const deleteWin = useCallback(async (id: string) => {
+    if (!currentUser) return;
+    try {
+      await deleteDoc(doc(db, 'wins', id));
+      logger.info('Win deleted', 'useWins', { id });
+    } catch (err) {
+      logger.error('Failed to delete win', 'useWins', err);
+      throw err;
+    }
+  }, [currentUser]);
 
-  const addReflection = useCallback((reflection: Omit<WeeklyReflection, 'id' | 'createdAt'>): WeeklyReflection => {
-    const newReflection: WeeklyReflection = {
-      ...reflection,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-    };
-    setReflections(prev => [newReflection, ...prev]);
-    logger.info('Reflection added', 'useWins', { id: newReflection.id });
-    return newReflection;
-  }, []);
+  const addReflection = useCallback(async (reflectionData: Omit<WeeklyReflection, 'id' | 'createdAt'>) => {
+    if (!currentUser) throw new Error("User not authenticated");
+    try {
+      const newReflection = {
+        ...reflectionData,
+        userId: currentUser.uid,
+        weekStartDate: Timestamp.fromDate(reflectionData.weekStartDate),
+        createdAt: Timestamp.now(),
+      };
+      const docRef = await addDoc(collection(db, 'reflections'), newReflection);
+      return { ...reflectionData, id: docRef.id };
+    } catch (err) {
+      logger.error('Failed to add reflection', 'useWins', err);
+      throw err;
+    }
+  }, [currentUser]);
 
-  // Stats calculations with memoized callbacks
+  // Stats calculations (CLIENT SIDE for now, based on synced data)
   const getWinsThisWeek = useCallback((): number => {
     const now = new Date();
     const weekStart = startOfWeek(now, { weekStartsOn: DATE_CONFIG.WEEK_STARTS_ON });
