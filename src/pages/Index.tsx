@@ -181,7 +181,31 @@ function AppContent() {
 
                 <div className="relative z-10 max-w-lg mx-auto space-y-6">
                   <div className="w-16 h-16 bg-white/10 backdrop-blur-lg rounded-2xl flex items-center justify-center mx-auto border border-white/20">
-                    <Plus className="w-8 h-8 text-white" />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="w-full h-full flex items-center justify-center outline-none focus:ring-2 focus:ring-white/50 rounded-2xl transition-all hover:bg-white/20">
+                          <Plus className="w-8 h-8 text-white" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="center" className="w-48 bg-white/95 backdrop-blur-xl border-white/20 shadow-xl rounded-xl">
+                        <AddWinDialog
+                          trigger={
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-pointer gap-2 p-3 font-medium text-gray-700 hover:text-blue-600 focus:text-blue-600 hover:bg-blue-50 focus:bg-blue-50 rounded-lg">
+                              <Zap className="w-4 h-4" />
+                              Log Win
+                            </DropdownMenuItem>
+                          }
+                        />
+                        <DropdownMenuItem onClick={() => setCurrentView('reflection')} className="cursor-pointer gap-2 p-3 font-medium text-gray-700 hover:text-purple-600 focus:text-purple-600 hover:bg-purple-50 focus:bg-purple-50 rounded-lg">
+                          <Sparkles className="w-4 h-4" />
+                          Start Reflection
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setCurrentView('manager')} className="cursor-pointer gap-2 p-3 font-medium text-gray-700 hover:text-emerald-600 focus:text-emerald-600 hover:bg-emerald-50 focus:bg-emerald-50 rounded-lg">
+                          <FileText className="w-4 h-4" />
+                          Manager Export
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <div>
                     <h2 className="text-3xl font-bold mb-2">Log a New Achievement</h2>
