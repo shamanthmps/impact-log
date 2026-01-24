@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Plus, X, CalendarIcon, Sparkles } from 'lucide-react';
+import { Plus, X, CalendarIcon, Sparkles, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -10,16 +10,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useWinsContext } from '@/contexts/WinsContext';
-import { WinCategory, ImpactType, WIN_CATEGORIES, IMPACT_TYPES } from '@/types/win';
+import { WinCategory, ImpactType, WIN_CATEGORIES, IMPACT_TYPES, Win } from '@/types/win';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface AddWinDialogProps {
   trigger?: React.ReactNode;
+  winToEdit?: Win | null;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function AddWinDialog({ trigger }: AddWinDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenChange: setControlledOpen }: AddWinDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = setControlledOpen || setInternalOpen;
+
   const [date, setDate] = useState<Date>(new Date());
   const [category, setCategory] = useState<WinCategory>('delivery');
   const [situation, setSituation] = useState('');
@@ -28,7 +35,28 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
   const [impactType, setImpactType] = useState<ImpactType>('time-saved');
   const [evidence, setEvidence] = useState('');
 
-  const { addWin } = useWinsContext();
+  const { addWin, updateWin } = useWinsContext();
+
+  const isEditing = !!winToEdit;
+
+  useEffect(() => {
+    if (winToEdit) {
+      setDate(new Date(winToEdit.date));
+      setCategory(winToEdit.category);
+      setSituation(winToEdit.situation);
+      setAction(winToEdit.action);
+      setImpact(winToEdit.impact);
+      setImpactType(winToEdit.impactType);
+      setEvidence(winToEdit.evidence || '');
+    } else if (isOpen && !isEditing) {
+      // Reset only if opening in add mode
+      // Note: We avoid aggressive resetting to keep draft if just closed/reopened? 
+      // For now, let's reset to defaults if opening fresh Add
+      if (!trigger) { // If controlled
+        resetForm();
+      }
+    }
+  }, [winToEdit, isOpen]);
 
   const resetForm = () => {
     setDate(new Date());
@@ -40,7 +68,7 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
     setEvidence('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!situation.trim() || !action.trim() || !impact.trim()) {
@@ -48,40 +76,54 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
       return;
     }
 
-    addWin({
-      date,
-      category,
-      situation: situation.trim(),
-      action: action.trim(),
-      impact: impact.trim(),
-      impactType,
-      evidence: evidence.trim() || undefined,
-    });
+    try {
+      if (isEditing && winToEdit) {
+        await updateWin(winToEdit.id, {
+          date,
+          category,
+          situation: situation.trim(),
+          action: action.trim(),
+          impact: impact.trim(),
+          impactType,
+          evidence: evidence.trim() || undefined,
+        });
+        toast.success('Win updated successfully! 📝');
+      } else {
+        await addWin({
+          date,
+          category,
+          situation: situation.trim(),
+          action: action.trim(),
+          impact: impact.trim(),
+          impactType,
+          evidence: evidence.trim() || undefined,
+        });
+        toast.success('Win logged successfully! 🎉');
+      }
 
-    toast.success('Win logged successfully! 🎉');
-    resetForm();
-    setOpen(false);
+      setOpen(false);
+      if (!isEditing) resetForm();
+
+    } catch (error) {
+      toast.error("Failed to save win");
+      console.error(error);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button
-            className="btn-primary-glow bg-blue-600 hover:bg-blue-700 text-white gap-2 h-10 w-10 rounded-full sm:h-10 sm:w-auto sm:rounded-lg sm:px-4 p-0 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline text-sm font-semibold">Add Win</span>
-          </Button>
-        )}
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setOpen}>
+      {trigger && (
+        <DialogTrigger asChild>
+          {trigger}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[550px] glass-card border-white/10 p-0 overflow-hidden shadow-2xl">
         <DialogHeader className="p-6 pb-4 border-b border-white/5 bg-white/5">
           <div className="flex items-center gap-2 text-primary mb-1">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-xs font-medium uppercase tracking-wider">New Entry</span>
+            {isEditing ? <Pencil className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+            <span className="text-xs font-medium uppercase tracking-wider">{isEditing ? 'Update Entry' : 'New Entry'}</span>
           </div>
-          <DialogTitle className="text-2xl font-bold">Log a Win</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">{isEditing ? 'Edit Win' : 'Log a Win'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -209,7 +251,7 @@ export function AddWinDialog({ trigger }: AddWinDialogProps) {
               Cancel
             </Button>
             <Button type="submit" variant="primary" className="flex-1 btn-primary-glow">
-              Save Win
+              {isEditing ? 'Update Win' : 'Save Win'}
             </Button>
           </div>
         </form>

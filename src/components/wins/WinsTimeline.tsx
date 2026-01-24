@@ -3,11 +3,12 @@ import { format, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { Filter, Search } from 'lucide-react';
 import { WinCard } from './WinCard';
 import { useWinsContext } from '@/contexts/WinsContext';
-import { WinCategory, WIN_CATEGORIES } from '@/types/win';
+import { WinCategory, WIN_CATEGORIES, Win } from '@/types/win';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { AddWinDialog } from '@/components/wins/AddWinDialog';
 
 type DateFilter = 'all' | 'week' | 'month' | '3months';
 
@@ -16,6 +17,9 @@ export function WinsTimeline() {
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [categoryFilter, setCategoryFilter] = useState<WinCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Edit State
+  const [editingWin, setEditingWin] = useState<Win | null>(null);
 
   const filteredWins = useMemo(() => {
     let filtered = [...wins];
@@ -105,6 +109,13 @@ export function WinsTimeline() {
         </div>
       </div>
 
+      {/* Edit Dialog - Controlled */}
+      <AddWinDialog
+        open={!!editingWin}
+        onOpenChange={(open) => !open && setEditingWin(null)}
+        winToEdit={editingWin}
+      />
+
       {/* Wins List */}
       {filteredWins.length === 0 ? (
         <div className="text-center py-12">
@@ -125,6 +136,7 @@ export function WinsTimeline() {
               <WinCard
                 win={win}
                 onDelete={handleDelete}
+                onEdit={(win) => setEditingWin(win)}
               />
             </div>
           ))}

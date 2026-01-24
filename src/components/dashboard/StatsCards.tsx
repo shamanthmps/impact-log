@@ -18,16 +18,16 @@ export function StatsCards() {
       label: 'Wins This Month',
       value: getWinsThisMonth(),
       icon: Calendar,
-      color: 'text-accent',
-      bgColor: 'bg-accent/10',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
       delay: '100ms'
     },
     {
       label: 'Categories Covered',
       value: getCategoriesCovered(),
       icon: Layers,
-      color: 'text-category-ai',
-      bgColor: 'bg-category-ai/10',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
       delay: '200ms'
     },
   ];
