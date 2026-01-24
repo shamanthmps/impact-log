@@ -62,12 +62,12 @@ graph TD
 - **Quantifiable Impact**: Track Revenue, Efficiency, Quality, and Team Growth metrics.
 - **Categorization**: Tag wins by leadership, technical excellence, or innovation.
 
-### � Smart Visualization
+### 📅 Smart Visualization
 - **Dashboard**: Real-time metrics for your current impact momentum.
 - **Timeline**: Chronological history of your professional journey.
 - **Manager Ready**: Select a date range and instantly generate a formatted summary for your 1:1s.
 
-### � Security & Privacy
+### 🔒 Security & Privacy
 - **Dual Mode**: 
   - **Guest**: Private local storage (zero data leaves your device).
   - **Admin**: Encrypted cloud sync for multi-device access.
@@ -86,7 +86,7 @@ Impact Log is designed as a **self-hosted solution** for complete data sovereign
 
 ---
 
-## �️ Getting Started
+## 💻 Getting Started
 
 ### Prerequisites
 - Node.js 18+
@@ -117,7 +117,7 @@ Impact Log is designed as a **self-hosted solution** for complete data sovereign
 
 ---
 
-## � License
+## 📝 License
 
 **Proprietary Reference Implementation**  
 This codebase is made public for portfolio demonstration and architectural reference. Please contact the author for commercial use or enterprise deployment.
@@ -139,6 +139,6 @@ Your career is a story worth telling well. Whether you store your data locally o
 **© 2026 Shamanth. All Rights Reserved.**
 
 [![GitHub](https://img.shields.io/badge/GitHub-shamanthmps-181717?style=flat&logo=github)](https://github.com/shamanthmps)
-[![Email](https://img.shields.io/badge/Email-shamanthmps%40gmail.com-red?style=flat&logo=gmail)](mailto:shamanthmps@gmail.com)
+[![Email](https://img.shields.io/badge/Email-shamanthcareers%40gmail.com-red?style=flat&logo=gmail)](mailto:shamanthcareers@gmail.com)
 
 </div>
