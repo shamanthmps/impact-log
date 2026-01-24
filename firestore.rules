@@ -6,21 +6,22 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Helper to check if matches user's UID
-    function isOwner(userId) {
-      return request.auth.uid == userId;
+    // Helper to check if the user is the specific admin email
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'shamanthcareers@gmail.com';
     }
 
     match /wins/{winId} {
-      // Allow read/write if the user is authenticated and is the owner of the document
-      // We assume every 'win' document has a 'userId' field.
-      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || resource == null);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Only the specific admin email can read or write
+      allow read, write: if isAdmin();
+    }
+
+    match /reflections/{reflectionId} {
+      allow read, write: if isAdmin();
     }
     
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isAdmin();
     }
   }
 }
