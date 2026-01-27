@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Plus, X, CalendarIcon, Sparkles, Pencil } from 'lucide-react';
+import { Plus, X, CalendarIcon, Sparkles, Pencil, Loader2 } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+
+// ... (inside the component)
+
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,6 +41,10 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
   const [impactLevel, setImpactLevel] = useState<ImpactLevel>('Medium');
   const [evidence, setEvidence] = useState('');
 
+  // AI Generation State
+  const [rawInput, setRawInput] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
   const { addWin, updateWin } = useWinsContext();
 
   const isEditing = !!winToEdit;
@@ -66,6 +75,98 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
     setImpactType('time-saved');
     setImpactLevel('Medium');
     setEvidence('');
+    setEvidence('');
+    setRawInput('');
+  };
+
+  const handleGenerateCar = async () => {
+    if (!rawInput.trim()) return;
+
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      toast.error("Gemini API Key is missing in environment variables.");
+      return;
+    }
+
+    setIsAiLoading(true);
+    console.log("Using API Key:", apiKey.substring(0, 10) + "...");
+
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      // Using gemini-2.0-flash-lite for free tier compatibility
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+
+      const SYSTEM_PROMPT = `You are an Impact Log assistant built for a Staff or Senior Technical Program Manager.
+
+Your sole purpose is to convert rough, unpolished user input into clear,
+promotion-ready impact statements using the Challenge–Action–Result format.
+
+Operating rules:
+- Always use the Challenge–Action–Result structure.
+- Assume inputs are rough, incomplete, or informal.
+- Preserve the original intent exactly.
+- Do not exaggerate impact.
+- Do not invent metrics, scope, or outcomes.
+- Use only the information explicitly provided by the user.
+- Rewrite with clarity, precision, and an executive tone.
+- Frame impact in business terms such as clarity, risk reduction,
+  delivery predictability, quality, stakeholder alignment, or execution speed.
+- Use first-person ownership in the Action section.
+- Keep language concise, confident, and outcome-driven.
+- No emojis.
+- No casual language.
+- No filler.
+- Suitable for 1:1s, promotion packets, and leadership reviews.
+- Do not ask follow-up questions.
+
+Output format (strict):
+
+Challenge:
+<1–2 lines>
+
+Action:
+<2–3 lines, first-person ownership>
+
+Result:
+<1–2 lines, business outcome>
+`;
+
+      const prompt = `${SYSTEM_PROMPT}\n\nUser input:\n${rawInput}`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const responseText = response.text();
+
+      // Parse the response to extract Challenge, Action, Result
+      const challengeMatch = responseText.match(/Challenge:\s*([\s\S]*?)(?=Action:)/i);
+      const actionMatch = responseText.match(/Action:\s*([\s\S]*?)(?=Result:)/i);
+      const resultMatch = responseText.match(/Result:\s*([\s\S]*?)$/i);
+
+      const challenge = challengeMatch ? challengeMatch[1].trim() : "";
+      const action = actionMatch ? actionMatch[1].trim() : "";
+      const resultText = resultMatch ? resultMatch[1].trim() : "";
+
+      if (challenge || action || resultText) {
+        setSituation(challenge || rawInput); // Fallback to raw input if parsing fails partially
+        setAction(action);
+        setImpact(resultText);
+        toast.success("AI generated CAR statements! Please review.");
+      } else {
+        // Fallback if regex fails completely
+        setSituation(responseText);
+        toast.warning("Could not parse strict format. Raw output placed in Challenge.");
+      }
+
+    } catch (error: any) {
+      console.error(error);
+      if (error.message?.includes("404") || error.toString().includes("404")) {
+        toast.error("API Error: Model not found. Please enable 'Generative Language API' in Google Cloud Console.");
+      } else {
+        toast.error("Failed to generate content. Please try again.");
+      }
+    } finally {
+      setIsAiLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -126,9 +227,45 @@ export function AddWinDialog({ trigger, winToEdit, open: controlledOpen, onOpenC
             <span className="text-xs font-medium uppercase tracking-wider">{isEditing ? 'Update Entry' : 'New Entry'}</span>
           </div>
           <DialogTitle className="text-2xl font-bold">{isEditing ? 'Edit Win' : 'Log a Win'}</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground mt-1">
+            Record your key achievements and wins clearly.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+          {/* AI Assistant Section */}
+          <div className="bg-white/5 rounded-lg p-4 space-y-3 border border-indigo-500/30">
+            <div className="flex items-center justify-between">
+              <Label className="text-indigo-300 font-medium flex items-center gap-2">
+                <Sparkles className="w-3 h-3 text-indigo-400" />
+                AI Assistant
+              </Label>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Powered by Gemini</span>
+            </div>
+            <Textarea
+              placeholder="Describe what you did in your own words (e.g. 'I fixed a memory leak in the dashboard that was crashing browsers...')"
+              value={rawInput}
+              onChange={(e) => setRawInput(e.target.value)}
+              className="bg-black/20 border-indigo-500/20 focus:border-indigo-500/50 min-h-[80px]"
+            />
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-[10px] text-muted-foreground leading-tight max-w-[70%]">
+                Text is sent to Gemini only for structuring. Nothing is saved without your action.
+              </p>
+              <Button
+                type="button"
+                onClick={handleGenerateCar}
+                disabled={isAiLoading || !rawInput.trim()}
+                size="sm"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white border-0"
+              >
+                {isAiLoading ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : null}
+                Convert to CAR
+              </Button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             {/* Date Picker */}
             <div className="space-y-2">

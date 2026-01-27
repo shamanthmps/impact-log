@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
-import { useProfile, UserProfile } from "@/hooks/useProfile";
+import { useProfile, type UserProfile } from "@/hooks/useProfile";
 import { User, Briefcase, Award, Loader2, Edit2, Save, X } from "lucide-react";
 import { useWinsContext } from "@/contexts/WinsContext";
 
@@ -28,7 +28,7 @@ export function ProfileDialogContent() {
         try {
             await updateProfile(formData);
             setIsEditing(false);
-        } catch (error) {
+        } catch (_) {
             // error handled in hook
         } finally {
             setIsSaving(false);
@@ -99,7 +99,7 @@ export function ProfileDialogContent() {
                         {isEditing ? (
                             <Input
                                 value={formData.status || ''}
-                                onChange={e => setFormData({ ...formData, status: e.target.value as any })}
+                                onChange={e => setFormData({ ...formData, status: e.target.value as UserProfile['status'] })}
                                 className="h-8 mt-1 bg-white"
                                 placeholder="Status"
                             />

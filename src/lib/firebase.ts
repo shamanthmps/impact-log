@@ -2,6 +2,7 @@ import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAnalytics, Analytics } from 'firebase/analytics';
+import { getFunctions, Functions } from 'firebase/functions';
 import { getEnvConfig, isEnvConfigValid } from './env';
 import { logger } from './logger';
 
@@ -9,7 +10,9 @@ import { logger } from './logger';
 let app: FirebaseApp | null = null;
 let authInstance: Auth | null = null;
 let dbInstance: Firestore | null = null;
+
 let analyticsInstance: Analytics | null = null;
+let functionsInstance: Functions | null = null;
 
 /**
  * Initialize Firebase with validated configuration
@@ -75,6 +78,20 @@ export function getAnalyticsInstance(): Analytics {
 }
 
 /**
+ * Get Functions instance
+ * Initializes Firebase if not already done
+ */
+export function getFunctionsInstance(): Functions {
+    if (functionsInstance) {
+        return functionsInstance;
+    }
+
+    const firebaseApp = initializeFirebase();
+    functionsInstance = getFunctions(firebaseApp);
+    return functionsInstance;
+}
+
+/**
  * Check if Firebase can be initialized
  * Useful for conditional rendering or graceful degradation
  */
@@ -109,6 +126,15 @@ export const analytics = (() => {
     } catch {
         logger.warn('Firebase analytics accessed before configuration', 'Firebase');
         return null as unknown as Analytics;
+    }
+})();
+
+export const functions = (() => {
+    try {
+        return getFunctionsInstance();
+    } catch {
+        logger.warn('Firebase functions accessed before configuration', 'Firebase');
+        return null as unknown as Functions;
     }
 })();
 

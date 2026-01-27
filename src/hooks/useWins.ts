@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Win, WeeklyReflection } from '@/types/win';
+import type { Win, WeeklyReflection } from '@/types/win';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { db } from '@/lib/firebase';
 import {
@@ -18,7 +18,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { DATE_CONFIG, STORAGE_KEYS } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { storageService } from '@/lib/storage';
-import { toast } from 'sonner';
 
 const ADMIN_EMAIL = 'shamanthcareers@gmail.com';
 
@@ -70,7 +69,7 @@ export function useWins() {
       return () => unsubscribe();
     } else {
       // GUEST: Load from LocalStorage once on mount
-      const storedWins = storageService.get<any[]>(STORAGE_KEYS.WINS);
+      const storedWins = storageService.get<Win[]>(STORAGE_KEYS.WINS);
       if (storedWins) {
         setWins(storedWins.map(w => ({
           ...w,
@@ -114,7 +113,7 @@ export function useWins() {
 
       return () => unsubscribe();
     } else {
-      const storedReflections = storageService.get<any[]>(STORAGE_KEYS.REFLECTIONS);
+      const storedReflections = storageService.get<WeeklyReflection[]>(STORAGE_KEYS.REFLECTIONS);
       if (storedReflections) {
         setReflections(storedReflections.map(r => ({
           ...r,
@@ -181,7 +180,7 @@ export function useWins() {
 
     if (isAdmin) {
       try {
-        const firestoreUpdates: any = { ...updates, updatedAt: Timestamp.now() };
+        const firestoreUpdates: Record<string, unknown> = { ...updates, updatedAt: Timestamp.now() };
         if (updates.date) firestoreUpdates.date = Timestamp.fromDate(updates.date);
 
         // Sanitize optional fields

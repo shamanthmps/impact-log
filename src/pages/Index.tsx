@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
-import { Plus, LayoutDashboard, Clock, FileText, Sparkles, Zap, Search, Bell, LogOut, User, AlertTriangle, ShieldAlert, Settings } from 'lucide-react';
+import { Plus, LayoutDashboard, Clock, FileText, Sparkles, Zap, LogOut, User, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -22,7 +22,6 @@ import { WeeklyReflection } from '@/components/reflection/WeeklyReflection';
 import { DataPersistenceWarning } from '@/components/ui/DataPersistenceWarning';
 import { cn } from '@/lib/utils';
 import { MOTIVATIONAL_LINES, APP_CONFIG, DATE_CONFIG } from '@/lib/constants';
-import { toast } from 'sonner';
 
 type View = 'dashboard' | 'timeline' | 'manager' | 'reflection';
 

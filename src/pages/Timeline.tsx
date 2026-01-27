@@ -6,11 +6,12 @@ import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Plus, Bell, User } from 'lucide-react';
 import { format } from 'date-fns';
+import type { Win } from '@/types/win';
 
 export default function Timeline() {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
-    const [wins, setWins] = useState<any[]>([]);
+    const [wins, setWins] = useState<Win[]>([]);
     const [filter, setFilter] = useState('ALL IMPACT');
 
     useEffect(() => {
@@ -18,7 +19,16 @@ export default function Timeline() {
             if (!currentUser) return;
             const q = query(collection(db, 'wins'), orderBy('date', 'desc'));
             const snapshot = await getDocs(q);
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const data = snapshot.docs.map(doc => {
+                const docData = doc.data();
+                return {
+                    id: doc.id,
+                    ...docData,
+                    date: docData.date?.toDate ? docData.date.toDate() : new Date(docData.date),
+                    createdAt: docData.createdAt?.toDate ? docData.createdAt.toDate() : new Date(docData.createdAt),
+                    updatedAt: docData.updatedAt?.toDate ? docData.updatedAt.toDate() : new Date(docData.updatedAt),
+                } as Win;
+            });
             setWins(data);
         }
         fetchWins();
@@ -80,14 +90,16 @@ export default function Timeline() {
 
                     {wins.map((win, index) => {
                         const isEven = index % 2 === 0;
+                        const dateObj = win.date; // already IS a Date due to fetch conversion
+
                         return (
                             <div key={win.id} className={`flex flex-col md:flex-row items-center w-full group ${isEven ? '' : 'md:flex-row-reverse'}`}>
                                 {/* Left Side */}
                                 <div className="w-full md:w-1/2 flex md:justify-end px-8 md:px-12 mb-4 md:mb-0">
                                     {isEven ? (
                                         <div className="text-right">
-                                            <h3 className="text-primary font-black text-lg uppercase tracking-widest">{format(new Date(win.date), 'MMMM')}</h3>
-                                            <h4 className="text-primary font-bold text-xl">{format(new Date(win.date), 'yyyy')}</h4>
+                                            <h3 className="text-primary font-black text-lg uppercase tracking-widest">{format(dateObj, 'MMMM')}</h3>
+                                            <h4 className="text-primary font-bold text-xl">{format(dateObj, 'yyyy')}</h4>
                                         </div>
                                     ) : (
                                         <TimelineCard win={win} onClick={() => navigate(`/achievement/${win.id}`)} />
@@ -105,8 +117,8 @@ export default function Timeline() {
                                         <TimelineCard win={win} onClick={() => navigate(`/achievement/${win.id}`)} />
                                     ) : (
                                         <div className="text-left">
-                                            <h3 className="text-primary font-black text-lg uppercase tracking-widest">{format(new Date(win.date), 'MMMM')}</h3>
-                                            <h4 className="text-primary font-bold text-xl">{format(new Date(win.date), 'yyyy')}</h4>
+                                            <h3 className="text-primary font-black text-lg uppercase tracking-widest">{format(dateObj, 'MMMM')}</h3>
+                                            <h4 className="text-primary font-bold text-xl">{format(dateObj, 'yyyy')}</h4>
                                         </div>
                                     )}
                                 </div>
@@ -130,25 +142,25 @@ export default function Timeline() {
     );
 }
 
-const TimelineCard = ({ win, onClick }: { win: any, onClick: () => void }) => (
+const TimelineCard = ({ win, onClick }: { win: Win, onClick: () => void }) => (
     <div onClick={onClick} className="bg-[#151515] border border-[#2A2A2A] p-6 lg:p-8 rounded-lg w-full max-w-xl hover:border-primary/50 transition-colors group cursor-pointer">
         <div className="mb-4">
-            {win.magnitude && (
+            {win.impactLevel && (
                 <span className="bg-[#222] text-[10px] font-bold text-white px-2 py-1 uppercase tracking-widest border border-[#333] mb-3 inline-block">
-                    {win.magnitude} Impact
+                    {win.impactLevel} Impact
                 </span>
             )}
-            <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">{win.title}</h3>
+            <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">{win.situation}</h3>
         </div>
 
         <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3">
-            {win.description}
+            {win.action}
         </p>
 
-        {win.metric && (
+        {win.evidence && (
             <div className="pt-4 border-t border-[#222]">
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Impact Metric</p>
-                <p className="text-lg font-bold text-primary">{win.metric}</p>
+                <p className="text-lg font-bold text-primary">{win.evidence}</p>
             </div>
         )}
     </div>

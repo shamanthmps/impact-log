@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
-import { format, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import { Filter, Search } from 'lucide-react';
+import { subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { Search } from 'lucide-react';
 import { WinCard } from './WinCard';
 import { useWinsContext } from '@/contexts/WinsContext';
-import { WinCategory, WIN_CATEGORIES, Win } from '@/types/win';
-import { Button } from '@/components/ui/button';
+import { WIN_CATEGORIES } from '@/types/win';
+import type { WinCategory, Win } from '@/types/win';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
