@@ -36,3 +36,10 @@ dist-ssr
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Internal Agent Configuration
+.agent/
+
+# Functions Build Artifacts
+functions/lib/
+functions/.runtimeconfig.json
