@@ -38,9 +38,14 @@ export const IMPACT_LEVELS: Record<ImpactLevel, { label: string; color: string; 
 export interface WeeklyReflection {
   id: string;
   weekStartDate: Date;
-  wentWell: string;
-  unblocked: string;
-  proudOf: string;
+  wentWell?: string;
+  unblocked?: string;
+  proudOf?: string;
+  focusedOn?: string;
+  contributed?: string;
+  impact?: string;
+  learned?: string;
+  carryForward?: string;
   createdAt: Date;
 }
 

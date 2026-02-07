@@ -10,9 +10,11 @@ import { toast } from 'sonner';
 
 export function WeeklyReflection() {
   const { addReflection, reflections } = useWinsContext();
-  const [wentWell, setWentWell] = useState('');
-  const [unblocked, setUnblocked] = useState('');
-  const [proudOf, setProudOf] = useState('');
+  const [focusedOn, setFocusedOn] = useState('');
+  const [contributed, setContributed] = useState('');
+  const [impact, setImpact] = useState('');
+  const [learned, setLearned] = useState('');
+  const [carryForward, setCarryForward] = useState('');
 
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
   const existingReflection = reflections.find(
@@ -22,45 +24,69 @@ export function WeeklyReflection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!wentWell.trim() && !unblocked.trim() && !proudOf.trim()) {
+    if (
+      !focusedOn.trim() &&
+      !contributed.trim() &&
+      !impact.trim() &&
+      !learned.trim() &&
+      !carryForward.trim()
+    ) {
       toast.error('Please fill in at least one field');
       return;
     }
 
     addReflection({
       weekStartDate: weekStart,
-      wentWell: wentWell.trim(),
-      unblocked: unblocked.trim(),
-      proudOf: proudOf.trim(),
+      focusedOn: focusedOn.trim(),
+      contributed: contributed.trim(),
+      impact: impact.trim(),
+      learned: learned.trim(),
+      carryForward: carryForward.trim(),
     });
 
     toast.success('Reflection saved! 🌟');
-    setWentWell('');
-    setUnblocked('');
-    setProudOf('');
+    setFocusedOn('');
+    setContributed('');
+    setImpact('');
+    setLearned('');
+    setCarryForward('');
   };
 
   const prompts = [
     {
-      id: 'wentWell',
-      label: 'What went well this week?',
-      value: wentWell,
-      onChange: setWentWell,
-      placeholder: 'Shipped the new feature, got positive feedback from stakeholders...',
+      id: 'focusedOn',
+      label: '1. What I focused on this week',
+      value: focusedOn,
+      onChange: setFocusedOn,
+      placeholder: 'I focused on establishing trust, understanding team challenges deeply...',
     },
     {
-      id: 'unblocked',
-      label: 'What did I unblock?',
-      value: unblocked,
-      onChange: setUnblocked,
-      placeholder: 'Resolved the dependency issue, facilitated a key decision...',
+      id: 'contributed',
+      label: '2. What I contributed',
+      value: contributed,
+      onChange: setContributed,
+      placeholder: 'I introduced multiple process and tooling improvements...',
     },
     {
-      id: 'proudOf',
-      label: 'What am I proud of?',
-      value: proudOf,
-      onChange: setProudOf,
-      placeholder: 'Led a difficult conversation, mentored a team member...',
+      id: 'impact',
+      label: '3. What impact I observed',
+      value: impact,
+      onChange: setImpact,
+      placeholder: 'There is a noticeable shift in how I am perceived within the team...',
+    },
+    {
+      id: 'learned',
+      label: '4. What I learned',
+      value: learned,
+      onChange: setLearned,
+      placeholder: 'Impact is accelerated when solutions are paired with empathy...',
+    },
+    {
+      id: 'carryForward',
+      label: '5. What I will carry forward',
+      value: carryForward,
+      onChange: setCarryForward,
+      placeholder: 'I will continue to anchor my contributions around clarity...',
     },
   ];
 
@@ -86,8 +112,51 @@ export function WeeklyReflection() {
             You've already reflected on this week. Here's what you wrote:
           </p>
           <div className="space-y-4">
-            {existingReflection.wentWell && (
+            {/* New Format Display */}
+            {existingReflection.focusedOn && (
               <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                  Focused On
+                </p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{existingReflection.focusedOn}</p>
+              </div>
+            )}
+            {existingReflection.contributed && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                  Contributed
+                </p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{existingReflection.contributed}</p>
+              </div>
+            )}
+            {existingReflection.impact && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                  Impact Observed
+                </p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{existingReflection.impact}</p>
+              </div>
+            )}
+            {existingReflection.learned && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                  Learned
+                </p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{existingReflection.learned}</p>
+              </div>
+            )}
+            {existingReflection.carryForward && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                  Carry Forward
+                </p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{existingReflection.carryForward}</p>
+              </div>
+            )}
+
+            {/* Old Format Display (Backward Compatibility) */}
+            {existingReflection.wentWell && (
+              <div className="pt-4 border-t border-border/50 mt-4">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
                   What went well
                 </p>
@@ -115,8 +184,8 @@ export function WeeklyReflection() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {prompts.map((prompt, index) => (
-            <GlassCard 
-              key={prompt.id} 
+            <GlassCard
+              key={prompt.id}
               className="animate-slide-up p-5"
               style={{ animationDelay: `${index * 100}ms` } as React.CSSProperties}
             >

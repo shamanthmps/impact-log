@@ -74,9 +74,11 @@ describe('Win Form Validation', () => {
 describe('Weekly Reflection Validation', () => {
     const validReflectionData = {
         weekStartDate: new Date(),
-        wentWell: 'This is what went well during the week, with enough detail',
-        unblocked: 'This is what I unblocked during the week, with enough detail',
-        proudOf: 'This is what I am proud of during the week, with detail',
+        focusedOn: 'This is what I focused on during the week, with enough detail',
+        contributed: 'This is what I contributed during the week, with enough detail',
+        impact: 'This is the impact I observed during the week, with enough detail',
+        learned: 'This is what I learned during the week, with enough detail',
+        carryForward: 'This is what I will carry forward, with enough detail',
     };
 
     it('should validate a correct reflection form', () => {
@@ -87,9 +89,16 @@ describe('Weekly Reflection Validation', () => {
     it('should reject short reflection fields', () => {
         const result = weeklyReflectionFormSchema.safeParse({
             ...validReflectionData,
-            wentWell: 'Short',
+            focusedOn: 'Short',
         });
         expect(result.success).toBe(false);
+    });
+
+    it('should accept empty optional fields', () => {
+        const result = weeklyReflectionFormSchema.safeParse({
+            weekStartDate: new Date(),
+        });
+        expect(result.success).toBe(true);
     });
 });
 

@@ -84,7 +84,8 @@ export const weeklyReflectionFormSchema = z.object({
         .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
             message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
         })
-        .trim(),
+        .trim()
+        .optional(),
     unblocked: z
         .string()
         .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
@@ -93,7 +94,8 @@ export const weeklyReflectionFormSchema = z.object({
         .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
             message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
         })
-        .trim(),
+        .trim()
+        .optional(),
     proudOf: z
         .string()
         .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
@@ -102,7 +104,58 @@ export const weeklyReflectionFormSchema = z.object({
         .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
             message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
         })
-        .trim(),
+        .trim()
+        .optional(),
+    focusedOn: z
+        .string()
+        .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
+            message: `Please provide at least ${VALIDATION.MIN_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
+            message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .trim()
+        .optional(),
+    contributed: z
+        .string()
+        .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
+            message: `Please provide at least ${VALIDATION.MIN_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
+            message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .trim()
+        .optional(),
+    impact: z
+        .string()
+        .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
+            message: `Please provide at least ${VALIDATION.MIN_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
+            message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .trim()
+        .optional(),
+    learned: z
+        .string()
+        .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
+            message: `Please provide at least ${VALIDATION.MIN_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
+            message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .trim()
+        .optional(),
+    carryForward: z
+        .string()
+        .min(VALIDATION.MIN_REFLECTION_FIELD_LENGTH, {
+            message: `Please provide at least ${VALIDATION.MIN_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .max(VALIDATION.MAX_REFLECTION_FIELD_LENGTH, {
+            message: `Please keep it under ${VALIDATION.MAX_REFLECTION_FIELD_LENGTH} characters`,
+        })
+        .trim()
+        .optional(),
 });
 
 // Infer types from schemas
